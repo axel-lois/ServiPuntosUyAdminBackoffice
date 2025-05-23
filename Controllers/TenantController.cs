@@ -8,11 +8,7 @@ namespace ServiPuntosUyAdmin.Controllers
     public class TenantController : Controller
     {
         // Simulación de almacenamiento (en memoria)
-        private static List<Tenant> tenants = new List<Tenant>
-        {
-            new Tenant { Id = 1, Nombre = "Ancap", LogoUrl = "", EsquemaColor = "#ffc107", Activo = true },
-            new Tenant { Id = 2, Nombre = "Petrobras", LogoUrl = "", EsquemaColor = "#28a745", Activo = true }
-        };
+        private static List<Tenant> tenants = FakeData.Tenants; // Reutilizamos la lista de tenants
 
         public IActionResult Index()
         {

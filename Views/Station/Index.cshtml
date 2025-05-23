@@ -1,6 +1,39 @@
+@model IEnumerable<ServiPuntosUyAdmin.Models.Station>
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var tenants = ViewBag.Tenants as List<ServiPuntosUyAdmin.Models.Tenant>;
 }
 
 <h2>Estaciones</h2>
-<p>Pantalla de gestión de estaciones del sistema.</p>
+<a class="btn btn-success" href="/Station/Create"><i class="fa fa-plus"></i> Nueva Estación</a>
+<br /><br />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Cadena</th>
+            <th>Activo</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var s in Model)
+        {
+            var tenantName = tenants?.FirstOrDefault(t => t.Id == s.TenantId)?.Nombre ?? "-";
+            <tr>
+                <td>@s.Id</td>
+                <td>@s.Nombre</td>
+                <td>@s.Direccion</td>
+                <td>@tenantName</td>
+                <td>@(s.Activo ? "Sí" : "No")</td>
+                <td>
+                    <a href="/Station/Edit/@s.Id" class="btn-link"><i class="fa fa-edit"></i> Editar</a>
+                    <a href="/Station/Delete/@s.Id" class="btn-link"><i class="fa fa-trash"></i> Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

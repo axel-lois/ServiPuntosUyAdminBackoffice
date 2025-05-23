@@ -1,0 +1,17 @@
+@model ServiPuntosUyAdmin.Models.Station
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Eliminar Estación</h2>
+
+<div class="alert alert-danger">
+    ¿Estás seguro que deseas eliminar la estación <strong>@Model.Nombre</strong>?
+</div>
+@using (Html.BeginForm("Delete", "Station", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Id)
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="/Station/Index" class="btn btn-secondary">Cancelar</a>
+}
