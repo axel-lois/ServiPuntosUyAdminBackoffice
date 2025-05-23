@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "aw3/RMxujgj0c56L5neldZG57lSiNHBiTaOnrJWpe2k=",
+  "Hash": "I83G15LbXhoPATaQLuSOZpYjRe+xWTnGN3zYdYiRFSM=",
   "Source": "ServiPuntosUyAdmin",
   "BasePath": "_content/ServiPuntosUyAdmin",
   "Mode": "Default",
@@ -53,6 +53,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\Users\\gonza\\Documents\\.NET\\Proyecto\\Backend - Backoffice\\ServiPuntosUyAdmin\\ServiPuntosUyAdmin\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ServiPuntosUyAdmin.bundle.scp.css"
+    },
+    {
+      "Identity": "C:\\Users\\gonza\\Documents\\.NET\\Proyecto\\Backend - Backoffice\\ServiPuntosUyAdmin\\ServiPuntosUyAdmin\\wwwroot\\css\\auth.css",
+      "SourceId": "ServiPuntosUyAdmin",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\gonza\\Documents\\.NET\\Proyecto\\Backend - Backoffice\\ServiPuntosUyAdmin\\ServiPuntosUyAdmin\\wwwroot\\",
+      "BasePath": "_content/ServiPuntosUyAdmin",
+      "RelativePath": "css/auth.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\auth.css"
     },
     {
       "Identity": "C:\\Users\\gonza\\Documents\\.NET\\Proyecto\\Backend - Backoffice\\ServiPuntosUyAdmin\\ServiPuntosUyAdmin\\wwwroot\\css\\site.css",

@@ -5,6 +5,10 @@
       "PackagePath": "staticwebassets\\ServiPuntosUyAdmin.bundle.scp.css"
     },
     {
+      "Id": "C:\\Users\\gonza\\Documents\\.NET\\Proyecto\\Backend - Backoffice\\ServiPuntosUyAdmin\\ServiPuntosUyAdmin\\wwwroot\\css\\auth.css",
+      "PackagePath": "staticwebassets\\css\\auth.css"
+    },
+    {
       "Id": "C:\\Users\\gonza\\Documents\\.NET\\Proyecto\\Backend - Backoffice\\ServiPuntosUyAdmin\\ServiPuntosUyAdmin\\wwwroot\\css\\site.css",
       "PackagePath": "staticwebassets\\css\\site.css"
     },

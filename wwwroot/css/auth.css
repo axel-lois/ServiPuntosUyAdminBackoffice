@@ -1,0 +1,69 @@
+.admin-auth-card {
+    max-width: 350px;
+    margin: 70px auto;
+    padding: 2.5rem 2rem;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(64, 72, 84, 0.15);
+    text-align: center;
+    border-top: 4px solid #6f42c1; /* violeta */
+}
+.admin-auth-header {
+    margin-bottom: 20px;
+}
+.admin-badge {
+    display: inline-block;
+    background: #6f42c1;
+    color: #fff;
+    padding: 0.25rem 1rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-radius: 999px;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+}
+.admin-auth-error {
+    background: #ffe0e0;
+    color: #c00;
+    margin-bottom: 18px;
+    padding: 0.7em 1em;
+    border-radius: 7px;
+    font-size: 1rem;
+}
+.admin-auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.admin-auth-input {
+    padding: 0.7rem;
+    border-radius: 6px;
+    border: 1.5px solid #ddd;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color .2s;
+}
+.admin-auth-input:focus {
+    border-color: #6f42c1;
+}
+.admin-auth-btn {
+    background: #6f42c1;
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    padding: 0.7rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background .2s;
+}
+.admin-auth-btn:hover {
+    background: #563d7c;
+}
+.admin-auth-divider {
+    margin-top: 20px;
+    color: #888;
+    font-size: 0.96rem;
+    border-top: 1px solid #eee;
+    padding-top: 16px;
+}

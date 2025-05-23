@@ -1,0 +1,22 @@
+@{
+    ViewData["Title"] = "Admin Login";
+}
+
+<link rel="stylesheet" href="~/css/auth.css" />
+
+<div class="admin-auth-card">
+    <div class="admin-auth-header">
+        <span class="admin-badge">ADMIN</span>
+        <h2>Panel de Administración</h2>
+    </div>
+    @if (ViewBag.Error != null)
+    {
+        <div class="admin-auth-error">@ViewBag.Error</div>
+    }
+    <form asp-action="Login" method="post" class="admin-auth-form">
+        <input type="email" name="email" placeholder="Email" required class="admin-auth-input" />
+        <input type="password" name="password" placeholder="Contraseña" required class="admin-auth-input" />
+        <button type="submit" class="admin-auth-btn">Ingresar</button>
+    </form>
+    <div class="admin-auth-divider">Acceso exclusivo para administradores</div>
+</div>
