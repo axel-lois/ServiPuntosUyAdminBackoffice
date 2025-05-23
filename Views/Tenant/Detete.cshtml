@@ -1,0 +1,15 @@
+@model ServiPuntosUyAdmin.Models.Tenant
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Eliminar Cadena (Tenant)</h2>
+
+<div class="alert alert-danger">
+    ¿Estás seguro que deseas eliminar la cadena <strong>@Model.Nombre</strong>?
+</div>
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="/Tenant/Index" class="btn btn-secondary">Cancelar</a>
+</form>

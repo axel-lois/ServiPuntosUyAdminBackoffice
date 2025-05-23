@@ -139,3 +139,99 @@ html, body {
     color: #6f42c1;
     letter-spacing: .5px;
 }
+
+.form-group {
+    margin-bottom: 1.3rem;
+}
+
+.form-control {
+    padding: 0.6rem;
+    border-radius: 6px;
+    border: 1.2px solid #ddd;
+    font-size: 1rem;
+    outline: none;
+    width: 100%;
+    max-width: 330px;
+}
+.form-control[type="color"] {
+    width: 60px;
+    height: 34px;
+    padding: 1px;
+    border: none;
+}
+
+.btn {
+    border-radius: 5px;
+    padding: 0.45rem 1.15rem;
+    border: none;
+    font-size: 1.06rem;
+    font-weight: 500;
+    margin-right: 0.7rem;
+    cursor: pointer;
+    transition: background 0.13s;
+}
+
+.btn-success { background: #42669b; color: #fff;}
+.btn-primary { background: #6f42c1; color: #fff;}
+.btn-primary:hover { background: #563d7c;}
+.btn-warning { background: #ffc107; color: #333;}
+.btn-danger { background: #dc3545; color: #fff;}
+.btn-secondary { background: #aaa; color: #fff;}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 1rem;
+    box-shadow: 0 2px 10px rgba(60,60,90,0.06);
+}
+
+.table th, .table td {
+    padding: 0.75rem 1.2rem;
+    border-bottom: 1px solid #eaeaea;
+    text-align: left;
+    font-size: 1rem;
+}
+
+.table th {
+    background: #f4f6fb;
+    font-weight: 700;
+    color: #292b43;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.color-badge {
+    padding: 3px 15px;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: bold;
+    display: inline-block;
+    font-size: 0.99rem;
+    letter-spacing: 0.2px;
+}
+
+/* Botones más prolijos */
+.btn-link {
+    color: #6f42c1;
+    font-weight: 600;
+    text-decoration: none;
+    margin-right: 0.5em;
+    transition: color 0.14s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2em;
+}
+.btn-link:hover {
+    color: #563d7c;
+}
+
+.btn-link .fa {
+    margin-right: 2px;
+    font-size: 1rem;
+}
+
