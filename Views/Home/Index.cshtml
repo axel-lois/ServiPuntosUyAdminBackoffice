@@ -1,7 +1,87 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+<div class="dashboard-widgets">
+    <div class="dashboard-widget">
+        <div class="widget-title"><i class="fa-solid fa-users"></i> Usuarios</div>
+        <div class="widget-value">@ViewBag.Usuarios</div>
+    </div>
+    <div class="dashboard-widget">
+        <div class="widget-title"><i class="fa-solid fa-coins"></i> Puntos canjeados</div>
+        <div class="widget-value">@ViewBag.PuntosCanjeados</div>
+    </div>
+    <div class="dashboard-widget">
+        <div class="widget-title"><i class="fa-solid fa-receipt"></i> Transacciones</div>
+        <div class="widget-value">@ViewBag.Transacciones</div>
+    </div>
+    <div class="dashboard-widget">
+        <div class="widget-title"><i class="fa-solid fa-gift"></i> Ofertas activas</div>
+        <div class="widget-value">@ViewBag.OfertasActivas</div>
+    </div>
 </div>
+
+<div class="dashboard-charts">
+    <div class="dashboard-chart-card">
+        <h3 class="dashboard-chart-title">Transacciones por mes</h3>
+        <canvas id="transaccionesChart"></canvas>
+    </div>
+    <div class="dashboard-chart-card">
+        <h3 class="dashboard-chart-title">Puntos canjeados por mes</h3>
+        <canvas id="puntosChart"></canvas>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Simulamos datos para los charts
+    const labels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
+    const transacciones = [1200, 1800, 1500, 2200, 1700, 2100];
+    const puntos = [5000, 8000, 6000, 9000, 7000, 8800];
+
+    // Chart de Transacciones
+    new Chart(document.getElementById('transaccionesChart'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Transacciones',
+                data: transacciones,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Chart de Puntos
+    new Chart(document.getElementById('puntosChart'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Puntos Canjeados',
+                data: puntos,
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+});
+</script>
+

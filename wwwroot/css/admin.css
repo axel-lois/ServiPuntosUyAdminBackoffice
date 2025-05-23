@@ -1,0 +1,141 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    background: #f4f6fb;
+}
+
+.admin-layout {
+    display: flex;
+    height: 100vh;
+}
+
+.admin-sidebar {
+    width: 240px;
+    background: #292b43;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.06);
+    position: relative;
+}
+
+.sidebar-header {
+    padding: 2rem 1rem 1rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 1.6rem;
+    font-weight: 700;
+    background: #23244a;
+    border-bottom: 1px solid #393b5e;
+}
+.sidebar-title {
+    letter-spacing: 1px;
+}
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    margin-top: 2rem;
+}
+.sidebar-link {
+    color: #fff;
+    text-decoration: none;
+    padding: 0.85rem 1.2rem;
+    font-size: 1.06rem;
+    border-radius: 6px;
+    transition: background 0.16s;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+.sidebar-link:hover, .sidebar-link.active {
+    background: #474b7b;
+}
+.sidebar-footer {
+    padding: 1rem 1.2rem;
+    font-size: 0.96rem;
+    border-top: 1px solid #393b5e;
+    background: #23244a;
+    text-align: left;
+}
+
+.admin-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.admin-main-header {
+    background: #fff;
+    padding: 2rem 2.2rem 1rem 2.2rem;
+    border-bottom: 1px solid #eee;
+}
+.admin-main-header h1 {
+    margin: 0;
+    font-size: 1.7rem;
+    color: #23244a;
+}
+
+.admin-content {
+    flex: 1;
+    padding: 2.5rem 2.2rem 2rem 2.2rem;
+}
+
+.dashboard-widgets {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+}
+
+.dashboard-widget {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.8rem 1.3rem;
+    box-shadow: 0 2px 16px rgba(33,44,60,0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+}
+
+.widget-title {
+    color: #6f42c1;
+    font-weight: 600;
+    font-size: 1.08rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.widget-value {
+    color: #23244a;
+    font-size: 2.3rem;
+    font-weight: bold;
+    margin-left: 0.1rem;
+}
+
+.dashboard-charts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 2rem;
+}
+.dashboard-chart-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(33,44,60,0.06);
+    padding: 1.7rem 1.3rem 1.1rem 1.3rem;
+}
+.dashboard-chart-title {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.13rem;
+    font-weight: 600;
+    color: #6f42c1;
+    letter-spacing: .5px;
+}

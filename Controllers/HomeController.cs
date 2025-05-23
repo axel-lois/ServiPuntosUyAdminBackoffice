@@ -1,31 +1,18 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using ServiPuntosUyAdmin.Models;
 
-namespace ServiPuntosUyAdmin.Controllers;
-
-public class HomeController : Controller
+namespace ServiPuntosUyAdmin.Controllers
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
+    public class HomeController : Controller
     {
-        _logger = logger;
-    }
-
-    public IActionResult Index()
-    {
-        return View();
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        public IActionResult Index()
+        {
+            ViewData["Title"] = "Dashboard";
+            // Simulamos datos, después los traemos de la DB
+            ViewBag.Usuarios = 1342;
+            ViewBag.PuntosCanjeados = 87390;
+            ViewBag.Transacciones = 25140;
+            ViewBag.OfertasActivas = 12;
+            return View();
+        }
     }
 }
