@@ -10,6 +10,14 @@ namespace ServiPuntosUyAdmin.Controllers
             return View();
         }
 
+        public IActionResult Logout()
+        {
+            // Borra la sesión de usuario
+            HttpContext.Session.Clear();
+            // Opcional: también podés limpiar TempData, cookies, etc.
+            return RedirectToAction("Login", "Account");
+        }
+
         // POST: /Account/Login
         [HttpPost]
          public IActionResult Login(string email, string password)
@@ -17,7 +25,8 @@ namespace ServiPuntosUyAdmin.Controllers
             // Simulación de validación simple solo para prueba, TODO: cambiar
             if (email == "admin@servipuntos.uy" && password == "admin123")
             {
-                // TODO: Implementar autenticación real y redirección al dashboard
+                HttpContext.Session.SetString("AdminLogged", "true");
+
                 return RedirectToAction("Index", "Home");
             }
             ViewBag.Error = "Usuario o contraseña incorrectos.";

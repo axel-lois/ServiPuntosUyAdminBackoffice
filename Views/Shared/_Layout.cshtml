@@ -1,6 +1,7 @@
 ﻿@{
     Layout = null;
     var currentUser = "Administrador"; // En el futuro: tomar de sesión
+    var isLogged = Context.Session.GetString("AdminLogged") == "true";
 }
 <!DOCTYPE html>
 <html lang="es">
@@ -12,40 +13,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-<div class="admin-layout">
-    <aside class="admin-sidebar">
-        <div class="sidebar-header">
-            <i class="fa-solid fa-gas-pump"></i>
-            <span class="sidebar-title">ServiPuntos</span>
-        </div>
-        <nav class="sidebar-nav">
-            <a class="sidebar-link" href="/Home/Index"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-            <a class="sidebar-link" href="/Admin/Index"><i class="fa-solid fa-user-shield"></i> Administradores</a>
-            <a class="sidebar-link" href="/Tenant/Index"><i class="fa-solid fa-building"></i> Cadenas (Tenants)</a>
-            <a class="sidebar-link" href="/Station/Index"><i class="fa-solid fa-gas-pump"></i> Estaciones</a>
-            <a class="sidebar-link" href="/Offer/Index"><i class="fa-solid fa-gift"></i> Ofertas/Promociones</a>
-            <a class="sidebar-link" href="/Product/Index"><i class="fa-solid fa-box-open"></i> Productos/Inventario</a>
-            <a class="sidebar-link" href="/Transaction/Index"><i class="fa-solid fa-receipt"></i> Transacciones</a>
-            <a class="sidebar-link" href="/Parameter/Index"><i class="fa-solid fa-cogs"></i> Parámetros Generales</a>
-            <a class="sidebar-link" href="/Audience/Index"><i class="fa-solid fa-users-viewfinder"></i> Audiencias/Segmentos</a>
-            <a class="sidebar-link" href="/Notification/Index"><i class="fa-solid fa-bell"></i> Notificaciones</a>
-            <a class="sidebar-link" href="/Customization/Index"><i class="fa-solid fa-palette"></i> Personalización</a>
-            <a class="sidebar-link" href="#"><i class="fa-solid fa-sign-out-alt"></i> Cerrar sesión</a>
-        </nav>
-
-        <div class="sidebar-footer">
-            <small>Sesión: @currentUser</small>
-        </div>
-    </aside>
-    <main class="admin-main">
-        <header class="admin-main-header">
-            <h1>@ViewData["Title"]</h1>
-        </header>
-        <section class="admin-content">
+@if (isLogged)
+{
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <!-- Sidebar igual que antes -->
+            <div class="sidebar-header">
+                <i class="fa-solid fa-gas-pump"></i>
+                <span class="sidebar-title">ServiPuntos</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a class="sidebar-link" href="/Home/Index"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a class="sidebar-link" href="/Admin/Index"><i class="fa-solid fa-user-shield"></i> Administradores</a>
+                <a class="sidebar-link" href="/Tenant/Index"><i class="fa-solid fa-building"></i> Cadenas (Tenants)</a>
+                <a class="sidebar-link" href="/Station/Index"><i class="fa-solid fa-gas-pump"></i> Estaciones</a>
+                <a class="sidebar-link" href="/Offer/Index"><i class="fa-solid fa-gift"></i> Ofertas/Promociones</a>
+                <a class="sidebar-link" href="/Product/Index"><i class="fa-solid fa-box-open"></i> Productos/Inventario</a>
+                <a class="sidebar-link" href="/Transaction/Index"><i class="fa-solid fa-receipt"></i> Transacciones</a>
+                <a class="sidebar-link" href="/Parameter/Index"><i class="fa-solid fa-cogs"></i> Parámetros Generales</a>
+                <a class="sidebar-link" href="/Audience/Index"><i class="fa-solid fa-users-viewfinder"></i> Audiencias/Segmentos</a>
+                <a class="sidebar-link" href="/Notification/Index"><i class="fa-solid fa-bell"></i> Notificaciones</a>
+                <a class="sidebar-link" href="/Customization/Index"><i class="fa-solid fa-palette"></i> Personalización</a>
+                <a class="sidebar-link" href="/Account/Logout"><i class="fa-solid fa-sign-out-alt"></i> Cerrar sesión</a>
+            </nav>
+            <div class="sidebar-footer">
+                <small>Sesión: @currentUser</small>
+            </div>
+        </aside>
+        <main class="admin-main">
+            <header class="admin-main-header">
+                <h1>@ViewData["Title"]</h1>
+            </header>
+            <section class="admin-content">
+                @RenderBody()
+            </section>
+        </main>
+    </div>
+}
+else
+{
+    <div style="min-height: 100vh; display: flex; justify-content: center; align-items: center; background: #f4f6fb;">
+        <div>
             @RenderBody()
-        </section>
-    </main>
-</div>
+        </div>
+    </div>
+}
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.13/dist/jquery.validate.unobtrusive.min.js"></script>
