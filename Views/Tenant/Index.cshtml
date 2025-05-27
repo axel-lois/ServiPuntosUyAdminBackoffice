@@ -4,7 +4,19 @@
 
 <h2>Cadenas (Tenants)</h2>
 <a class="btn btn-success" href="/Tenant/Create"><i class="fa fa-plus"></i> Nueva Cadena</a>
-<br /><br />
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success" style="margin-top:15px;">
+        @TempData["Success"]
+    </div>
+}
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger" style="margin-top:15px;">
+        @ViewBag.Error
+    </div>
+}
+
 
 <table class="table table-bordered table-striped">
     <thead>
@@ -21,8 +33,12 @@
         {
             <tr>
                 <td>@t.Id</td>
-                <td>@t.Nombre</td>
-                <td><span style="background:@t.EsquemaColor;padding:2px 14px;border-radius:6px;color:#fff">@t.EsquemaColor</span></td>
+                <td>@t.Name</td>
+                <td>
+                    <span style="background:@t.EsquemaColor;padding:2px 14px;border-radius:6px;color:#fff">
+                        @t.EsquemaColor
+                    </span>
+                </td>
                 <td>@(t.Activo ? "Sí" : "No")</td>
                 <td>
                     <a href="/Tenant/Edit/@t.Id" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i> Editar</a>

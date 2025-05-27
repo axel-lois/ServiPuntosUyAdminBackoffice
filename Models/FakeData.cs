@@ -6,8 +6,8 @@ namespace ServiPuntosUyAdmin.Models
     {
         public static List<Tenant> Tenants = new List<Tenant>
         {
-            new Tenant { Id = 1, Nombre = "Ancap", LogoUrl = "", EsquemaColor = "#ffc107", Activo = true },
-            new Tenant { Id = 2, Nombre = "Petrobras", LogoUrl = "", EsquemaColor = "#28a745", Activo = true }
+            new Tenant { Id = 1, Name = "Ancap"},
+            new Tenant { Id = 2, Name = "Petrobras"}
         };
 
         public static List<Station> Stations = new List<Station>

@@ -16,7 +16,7 @@
             <option value="">Seleccione...</option>
             @foreach(var tenant in tenants)
             {
-                <option value="@tenant.Id">@tenant.Nombre</option>
+                <option value="@tenant.Id">@tenant.Name</option>
             }
         </select>
         @Html.ValidationMessageFor(m => m.TenantId, "", new { @class = "text-danger" })

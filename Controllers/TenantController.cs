@@ -1,19 +1,40 @@
 using Microsoft.AspNetCore.Mvc;
 using ServiPuntosUyAdmin.Models;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace ServiPuntosUyAdmin.Controllers
 {
     public class TenantController : Controller
     {
-        // Simulación de almacenamiento (en memoria)
-        private static List<Tenant> tenants = FakeData.Tenants; // Reutilizamos la lista de tenants
+        private readonly string apiBaseUrl = "http://localhost:5162/api/Tenant"; // Cambia si tu API cambia
 
-        public IActionResult Index()
+        // GET: Tenant/Index
+        public async Task<IActionResult> Index()
         {
-            ViewData["Title"] = "Cadenas (Tenants)";
-            return View(tenants);
+            using (var client = new HttpClient())
+            {
+                // Token
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var response = await client.GetAsync($"{apiBaseUrl}/List");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var tenants = JsonConvert.DeserializeObject<List<Tenant>>(json);
+                    return View(tenants);
+                }
+                else
+                {
+                    ViewBag.Error = "No se pudo obtener la lista de cadenas.";
+                    return View(new List<Tenant>());
+                }
+            }
         }
 
         // GET: Tenant/Create
@@ -24,55 +45,148 @@ namespace ServiPuntosUyAdmin.Controllers
 
         // POST: Tenant/Create
         [HttpPost]
-        public IActionResult Create(Tenant tenant)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Tenant tenant)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                tenant.Id = tenants.Any() ? tenants.Max(t => t.Id) + 1 : 1;
-                tenants.Add(tenant);
-                return RedirectToAction(nameof(Index));
+                return View(tenant);
             }
-            return View(tenant);
+
+            using (var client = new HttpClient())
+            {
+                // Token
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                // Solo enviamos el campo que la API espera (name)
+                var json = JsonConvert.SerializeObject(new
+                {
+                    name = tenant.Name
+                });
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync($"{apiBaseUrl}/Create", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "¡La cadena se creó correctamente!";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ViewBag.Error = "No se pudo crear el Tenant. Verifique los datos o el acceso.";
+                    return View(tenant);
+                }
+            }
         }
 
         // GET: Tenant/Edit/5
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var tenant = tenants.FirstOrDefault(t => t.Id == id);
-            if (tenant == null) return NotFound();
-            return View(tenant);
+            using (var client = new HttpClient())
+            {
+                // Token
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var response = await client.GetAsync($"{apiBaseUrl}/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var tenant = JsonConvert.DeserializeObject<Tenant>(json);
+                    if (tenant == null) return NotFound();
+                    return View(tenant);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
         }
 
         // POST: Tenant/Edit/5
         [HttpPost]
-        public IActionResult Edit(Tenant tenant)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Tenant tenant)
         {
-            var original = tenants.FirstOrDefault(t => t.Id == tenant.Id);
-            if (original == null) return NotFound();
+            if (!ModelState.IsValid)
+                return View(tenant);
 
-            original.Nombre = tenant.Nombre;
-            original.LogoUrl = tenant.LogoUrl;
-            original.EsquemaColor = tenant.EsquemaColor;
-            original.Activo = tenant.Activo;
+            using (var client = new HttpClient())
+            {
+                // Token
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            return RedirectToAction(nameof(Index));
+                // Asumiendo que la API espera { id, name }
+                var json = JsonConvert.SerializeObject(new
+                {
+                    id = tenant.Id,
+                    name = tenant.Name
+                });
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PutAsync($"{apiBaseUrl}/{tenant.Id}", data);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "¡La cadena se editó correctamente!";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ViewBag.Error = "Error al editar la cadena.";
+                    return View(tenant);
+                }
+            }
         }
 
         // GET: Tenant/Delete/5
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var tenant = tenants.FirstOrDefault(t => t.Id == id);
-            if (tenant == null) return NotFound();
-            return View(tenant);
+            using (var client = new HttpClient())
+            {
+                // Token
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var response = await client.GetAsync($"{apiBaseUrl}/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var tenant = JsonConvert.DeserializeObject<Tenant>(json);
+                    if (tenant == null) return NotFound();
+                    return View(tenant);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
         }
 
         // POST: Tenant/Delete/5
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var tenant = tenants.FirstOrDefault(t => t.Id == id);
-            if (tenant != null) tenants.Remove(tenant);
-            return RedirectToAction(nameof(Index));
+            using (var client = new HttpClient())
+            {
+                // Token
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var response = await client.DeleteAsync($"{apiBaseUrl}/{id}");
+                // Mensaje flash de éxito si querés
+                TempData["Success"] = "¡La cadena se eliminó correctamente!";
+                // Ignoramos el resultado, siempre volvemos al Index
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }

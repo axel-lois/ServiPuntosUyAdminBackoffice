@@ -1,105 +1,208 @@
 using Microsoft.AspNetCore.Mvc;
 using ServiPuntosUyAdmin.Models;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 using System.Linq;
 
 namespace ServiPuntosUyAdmin.Controllers
 {
     public class StationController : Controller
     {
-        // Simulación de almacenamiento en memoria
-        private static List<Station> stations = FakeData.Stations;
+        private readonly string apiBaseUrl = "http://localhost:5162/api/Branch";
 
-        private static List<Tenant> tenants = FakeData.Tenants;
-
-        public IActionResult Index()
+        // GET: Station/Index
+        public async Task<IActionResult> Index()
         {
-            ViewData["Title"] = "Estaciones";
+            // Obtener el token de la sesión
+            string token = HttpContext.Session.GetString("jwt_token");
+            // Para poblar el combo de tenants, lo seguimos haciendo con FakeData, o podés hacerlo desde API
+            var tenants = FakeData.Tenants;
             ViewBag.Tenants = tenants;
+
+            // En este ejemplo NO hay un endpoint para listar todas, así que mostramos vacío
+            // Cuando lo tengas, hacé el request aquí
+            var stations = new List<Station>();
+            ViewBag.Info = "No hay endpoint para listar estaciones aún.";
             return View(stations);
         }
 
         // GET: Station/Create
         public IActionResult Create()
         {
-            ViewBag.Tenants = tenants;
+            ViewBag.Tenants = FakeData.Tenants;
             return View();
         }
 
         // POST: Station/Create
         [HttpPost]
-        public IActionResult Create(Station station)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Station station)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                station.Id = stations.Any() ? stations.Max(s => s.Id) + 1 : 1;
-                stations.Add(station);
-                return RedirectToAction(nameof(Index));
+                ViewBag.Tenants = FakeData.Tenants;
+                return View(station);
             }
-            ViewBag.Tenants = tenants;
-            return View(station);
+
+            using (var client = new HttpClient())
+            {
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var json = JsonConvert.SerializeObject(new
+                {
+                    tenantId = station.TenantId,
+                    address = station.Address,
+                    latitud = station.Latitud,
+                    longitud = station.Longitud,
+                    phone = station.Phone,
+                    openTime = station.OpenTime,
+                    closingTime = station.ClosingTime
+                });
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync($"{apiBaseUrl}/Create", content);
+
+                string apiResponse = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "¡La estación se creó correctamente!";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ViewBag.Tenants = FakeData.Tenants;
+                    ViewBag.Error = "No se pudo crear la estación. Detalles: " + apiResponse;
+                    return View(station);
+                }
+
+            }
         }
 
         // GET: Station/Edit/5
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var station = stations.FirstOrDefault(s => s.Id == id);
-            if (station == null) return NotFound();
-            ViewBag.Tenants = tenants;
-            return View(station);
+            ViewBag.Tenants = FakeData.Tenants;
+            // Buscar una estación por su ID usando el endpoint /api/Branch/{id}
+            using (var client = new HttpClient())
+            {
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var response = await client.GetAsync($"{apiBaseUrl}/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var station = JsonConvert.DeserializeObject<Station>(json);
+                    if (station == null) return NotFound();
+                    return View(station);
+                }
+                else
+                {
+                    ViewBag.Error = "No se pudo obtener la estación.";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
         }
 
         // POST: Station/Edit/5
         [HttpPost]
-        public IActionResult Edit(Station station)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Station station)
         {
-            var original = stations.FirstOrDefault(s => s.Id == station.Id);
-            if (original == null) return NotFound();
-
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                original.Address = station.Address;
-                original.Latitud = station.Latitud;
-                original.Longitud = station.Longitud;
-                original.TenantId = station.TenantId;
-                original.Phone = station.Phone;
-                original.OpenTime = station.OpenTime;
-                original.ClosingTime = station.ClosingTime;
-                return RedirectToAction(nameof(Index));
+                ViewBag.Tenants = FakeData.Tenants;
+                return View(station);
             }
-            ViewBag.Tenants = tenants;
-            return View(station);
+
+            using (var client = new HttpClient())
+            {
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var json = JsonConvert.SerializeObject(new
+                {
+                    address = station.Address,
+                    latitud = station.Latitud,
+                    longitud = station.Longitud,
+                    phone = station.Phone,
+                    openTime = station.OpenTime,
+                    closingTime = station.ClosingTime
+                });
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await client.PutAsync($"{apiBaseUrl}/{station.Id}/Update", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "¡La estación se editó correctamente!";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ViewBag.Tenants = FakeData.Tenants;
+                    ViewBag.Error = "No se pudo editar la estación.";
+                    return View(station);
+                }
+            }
         }
 
         // GET: Station/Delete/5
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var station = stations.FirstOrDefault(s => s.Id == id);
-            if (station == null) return NotFound();
-            return View(station);
+            // Cargar datos para confirmar eliminación
+            using (var client = new HttpClient())
+            {
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var response = await client.GetAsync($"{apiBaseUrl}/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var station = JsonConvert.DeserializeObject<Station>(json);
+                    if (station == null) return NotFound();
+                    return View(station);
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudo obtener la estación a eliminar.";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
         }
 
         // POST: Station/Delete/5
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            string apiUrl = $"https://localhost:5162/api/Branch/{id}/Delete"; // Cambia el dominio/baseurl real
-
-            using (var http = new HttpClient())
+            using (var client = new HttpClient())
             {
-                var response = await http.DeleteAsync(apiUrl);
-                if (!response.IsSuccessStatusCode)
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var response = await client.DeleteAsync($"{apiBaseUrl}/{id}/Delete");
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "¡La estación se eliminó correctamente!";
+                }
+                else
                 {
                     TempData["Error"] = "No se pudo eliminar la estación en el backend";
-                    // Si querés, podés redirigir a una página de error
-                    return RedirectToAction(nameof(Index));
                 }
+                return RedirectToAction(nameof(Index));
             }
-
-            var station = stations.FirstOrDefault(s => s.Id == id);
-            if (station != null) stations.Remove(station);
-
-            return RedirectToAction(nameof(Index));
         }
     }
 }
