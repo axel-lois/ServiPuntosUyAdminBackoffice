@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ServiPuntosUyAdmin")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+beb1f15bf5341de352b1564f3b773aeb32d339f3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+31cbc459afb03896c224fdc042416fc327d139e8")]
 [assembly: System.Reflection.AssemblyProductAttribute("ServiPuntosUyAdmin")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ServiPuntosUyAdmin")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

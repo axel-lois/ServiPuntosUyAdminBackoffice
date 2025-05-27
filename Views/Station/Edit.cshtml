@@ -3,23 +3,13 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var tenants = ViewBag.Tenants as List<ServiPuntosUyAdmin.Models.Tenant>;
 }
-<h2>Editar Estación</h2>
+
+<h2>Nueva Estación</h2>
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    @Html.HiddenFor(m => m.Id)
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="form-group">
-        <label>Nombre</label>
-        @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control", required = "required" })
-        @Html.ValidationMessageFor(m => m.Nombre, "", new { @class = "text-danger" })
-    </div>
-    <div class="form-group">
-        <label>Dirección</label>
-        @Html.TextBoxFor(m => m.Direccion, new { @class = "form-control", required = "required" })
-        @Html.ValidationMessageFor(m => m.Direccion, "", new { @class = "text-danger" })
-    </div>
     <div class="form-group">
         <label>Cadena (Tenant)</label>
         <select asp-for="TenantId" class="form-control" required>
@@ -32,8 +22,34 @@
         @Html.ValidationMessageFor(m => m.TenantId, "", new { @class = "text-danger" })
     </div>
     <div class="form-group">
-        <label>Activo</label>
-        @Html.CheckBoxFor(m => m.Activo)
+        <label>Dirección</label>
+        @Html.TextBoxFor(m => m.Address, new { @class = "form-control", required = "required" })
+        @Html.ValidationMessageFor(m => m.Address, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        <label>Latitud</label>
+        @Html.TextBoxFor(m => m.Latitud, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Latitud, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        <label>Longitud</label>
+        @Html.TextBoxFor(m => m.Longitud, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Longitud, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        <label>Teléfono</label>
+        @Html.TextBoxFor(m => m.Phone, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        <label>Horario Apertura</label>
+        @Html.TextBoxFor(m => m.OpenTime, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.OpenTime, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        <label>Horario Cierre</label>
+        @Html.TextBoxFor(m => m.ClosingTime, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.ClosingTime, "", new { @class = "text-danger" })
     </div>
     <button type="submit" class="btn btn-success">Guardar</button>
     <a href="/Station/Index" class="btn btn-secondary">Cancelar</a>

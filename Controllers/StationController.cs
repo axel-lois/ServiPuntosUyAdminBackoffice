@@ -8,9 +8,9 @@ namespace ServiPuntosUyAdmin.Controllers
     public class StationController : Controller
     {
         // Simulación de almacenamiento en memoria
-        private static List<Station> stations = FakeData.Stations; // Reutilizamos la lista de estaciones
+        private static List<Station> stations = FakeData.Stations;
 
-        private static List<Tenant> tenants = FakeData.Tenants; // Reutilizamos la lista de tenants
+        private static List<Tenant> tenants = FakeData.Tenants;
 
         public IActionResult Index()
         {
@@ -58,10 +58,13 @@ namespace ServiPuntosUyAdmin.Controllers
 
             if (ModelState.IsValid)
             {
-                original.Nombre = station.Nombre;
-                original.Direccion = station.Direccion;
+                original.Address = station.Address;
+                original.Latitud = station.Latitud;
+                original.Longitud = station.Longitud;
                 original.TenantId = station.TenantId;
-                original.Activo = station.Activo;
+                original.Phone = station.Phone;
+                original.OpenTime = station.OpenTime;
+                original.ClosingTime = station.ClosingTime;
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Tenants = tenants;
@@ -78,10 +81,24 @@ namespace ServiPuntosUyAdmin.Controllers
 
         // POST: Station/Delete/5
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            string apiUrl = $"https://localhost:5162/api/Branch/{id}/Delete"; // Cambia el dominio/baseurl real
+
+            using (var http = new HttpClient())
+            {
+                var response = await http.DeleteAsync(apiUrl);
+                if (!response.IsSuccessStatusCode)
+                {
+                    TempData["Error"] = "No se pudo eliminar la estación en el backend";
+                    // Si querés, podés redirigir a una página de error
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+
             var station = stations.FirstOrDefault(s => s.Id == id);
             if (station != null) stations.Remove(station);
+
             return RedirectToAction(nameof(Index));
         }
     }

@@ -12,10 +12,13 @@
     <thead>
         <tr>
             <th>Id</th>
-            <th>Nombre</th>
-            <th>Dirección</th>
             <th>Cadena</th>
-            <th>Activo</th>
+            <th>Dirección</th>
+            <th>Latitud</th>
+            <th>Longitud</th>
+            <th>Teléfono</th>
+            <th>Horario Apertura</th>
+            <th>Horario Cierre</th>
             <th></th>
         </tr>
     </thead>
@@ -25,10 +28,13 @@
             var tenantName = tenants?.FirstOrDefault(t => t.Id == s.TenantId)?.Nombre ?? "-";
             <tr>
                 <td>@s.Id</td>
-                <td>@s.Nombre</td>
-                <td>@s.Direccion</td>
                 <td>@tenantName</td>
-                <td>@(s.Activo ? "Sí" : "No")</td>
+                <td>@s.Address</td>
+                <td>@s.Latitud</td>
+                <td>@s.Longitud</td>
+                <td>@s.Phone</td>
+                <td>@s.OpenTime</td>
+                <td>@s.ClosingTime</td>
                 <td>
                     <a href="/Station/Edit/@s.Id" class="btn-link"><i class="fa fa-edit"></i> Editar</a>
                     <a href="/Station/Delete/@s.Id" class="btn-link"><i class="fa fa-trash"></i> Eliminar</a>

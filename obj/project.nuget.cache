@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "RRw15lFi180=",
+  "dgSpecHash": "rZY+dKbselg=",
   "success": true,
   "projectFilePath": "C:\\Users\\gonza\\Documents\\.NET\\Proyecto\\Backend - Backoffice\\ServiPuntosUyAdmin\\ServiPuntosUyAdmin\\ServiPuntosUyAdmin.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\gonza\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
   "logs": []
 }

@@ -1,7 +1,9 @@
 ﻿@{
     Layout = null;
-    var currentUser = "Administrador"; // En el futuro: tomar de sesión
+    var currentUser = Context.Session.GetString("AdminName") ?? "Administrador";
     var isLogged = Context.Session.GetString("AdminLogged") == "true";
+    var isLoginPage = (ViewContext.RouteData.Values["Controller"]?.ToString() == "Account"
+                       && ViewContext.RouteData.Values["Action"]?.ToString() == "Login");
 }
 <!DOCTYPE html>
 <html lang="es">

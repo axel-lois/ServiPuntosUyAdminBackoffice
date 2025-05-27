@@ -1,17 +1,16 @@
-@model ServiPuntosUyAdmin.Models.Station
-@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-
-<h2>Eliminar Estación</h2>
-
-<div class="alert alert-danger">
-    ¿Estás seguro que deseas eliminar la estación <strong>@Model.Nombre</strong>?
-</div>
-@using (Html.BeginForm("Delete", "Station", FormMethod.Post))
+@if (Model == null)
 {
-    @Html.AntiForgeryToken()
-    @Html.HiddenFor(m => m.Id)
-    <button type="submit" class="btn btn-danger">Eliminar</button>
-    <a href="/Station/Index" class="btn btn-secondary">Cancelar</a>
+    <div style="color:red;font-weight:bold;">El modelo es NULL (debug)</div>
+    <a href="/Station/Index">Volver</a>
+}
+else
+{
+    <h2>Eliminar Estación</h2>
+    <p>¿Seguro que deseas eliminar la estación con dirección <b>@Model.Address</b>?</p>
+    <form asp-action="Delete" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a href="/Station/Index" class="btn btn-secondary">Cancelar</a>
+    </form>
 }

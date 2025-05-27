@@ -29,3 +29,6 @@ C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\S
 C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\ServiPuntosUyAdmin.genruntimeconfig.cache
 C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\ref\ServiPuntosUyAdmin.dll
 C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\ServiPuntosUyAdmin.sourcelink.json
+C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\ServiPuntosUyAdmin.csproj.AssemblyReference.cache
+C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\ServiPun.15221AD5.Up2Date
