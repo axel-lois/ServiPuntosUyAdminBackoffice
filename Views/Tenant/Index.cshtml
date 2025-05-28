@@ -1,3 +1,4 @@
+@model IEnumerable<ServiPuntosUyAdmin.Models.Tenant>
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -17,15 +18,12 @@
     </div>
 }
 
-
 <table class="table table-bordered table-striped">
     <thead>
         <tr>
             <th>Id</th>
             <th>Nombre</th>
-            <th>Esquema Color</th>
-            <th>Activo</th>
-            <th></th>
+            <!-- Solo muestra columnas que existan -->
         </tr>
     </thead>
     <tbody>
@@ -34,16 +32,6 @@
             <tr>
                 <td>@t.Id</td>
                 <td>@t.Name</td>
-                <td>
-                    <span style="background:@t.EsquemaColor;padding:2px 14px;border-radius:6px;color:#fff">
-                        @t.EsquemaColor
-                    </span>
-                </td>
-                <td>@(t.Activo ? "Sí" : "No")</td>
-                <td>
-                    <a href="/Tenant/Edit/@t.Id" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i> Editar</a>
-                    <a href="/Tenant/Delete/@t.Id" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Eliminar</a>
-                </td>
             </tr>
         }
     </tbody>

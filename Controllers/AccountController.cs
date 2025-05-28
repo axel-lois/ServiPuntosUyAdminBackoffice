@@ -49,7 +49,7 @@ namespace ServiPuntosUyAdmin.Controllers
                         int userType = (int)meRes.data.userType;
 
                         // SOLO ADMIN (userType == 1)
-                        if (userType == 1)
+                        if (userType == 1 || userType == 2)
                         {
                             HttpContext.Session.SetString("AdminLogged", "true");
                             HttpContext.Session.SetString("jwt_token", token);
@@ -57,6 +57,10 @@ namespace ServiPuntosUyAdmin.Controllers
                             // Guardar el nombre (name) del admin en sesión
                             string adminName = meRes.data.name; // Ajustá si tu campo es diferente
                             HttpContext.Session.SetString("AdminName", adminName);
+
+                             // Guardar el nombre (name) del admin en sesión
+                            string adminBranch = meRes.data.name; // Ajustá si tu campo es diferente
+                            HttpContext.Session.SetString("AdminBranch", adminBranch);
                             return RedirectToAction("Index", "Home");
                         }
                         else

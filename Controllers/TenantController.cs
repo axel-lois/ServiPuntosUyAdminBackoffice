@@ -10,7 +10,7 @@ namespace ServiPuntosUyAdmin.Controllers
 {
     public class TenantController : Controller
     {
-        private readonly string apiBaseUrl = "http://localhost:5162/api/Tenant"; // Cambia si tu API cambia
+        private readonly string apiBaseUrl = "http://localhost:5162/api/Tenant"; 
 
         // GET: Tenant/Index
         public async Task<IActionResult> Index()
@@ -22,18 +22,19 @@ namespace ServiPuntosUyAdmin.Controllers
                 if (!string.IsNullOrEmpty(token))
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                var response = await client.GetAsync($"{apiBaseUrl}/List");
+                var response = await client.GetAsync($"{apiBaseUrl}");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    var tenants = JsonConvert.DeserializeObject<List<Tenant>>(json);
-                    return View(tenants);
+                    var responseObj = JsonConvert.DeserializeObject<TenantListResponse>(json);
+                    if (responseObj != null && responseObj.Data != null)
+                    {
+                        return View(responseObj.Data);
+                    }
                 }
-                else
-                {
-                    ViewBag.Error = "No se pudo obtener la lista de cadenas.";
-                    return View(new List<Tenant>());
-                }
+
+                ViewBag.Error = "No se pudo obtener la lista de cadenas.";
+                return View(new List<Tenant>());
             }
         }
 

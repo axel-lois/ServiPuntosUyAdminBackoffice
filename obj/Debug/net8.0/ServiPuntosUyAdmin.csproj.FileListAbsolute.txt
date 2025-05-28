@@ -18,11 +18,6 @@ C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\S
 C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\bin\Debug\net8.0\Newtonsoft.Json.dll
 C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\staticwebassets.build.json
 C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\staticwebassets.development.json
-C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\staticwebassets\msbuild.ServiPuntosUyAdmin.Microsoft.AspNetCore.StaticWebAssets.props
-C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\staticwebassets\msbuild.build.ServiPuntosUyAdmin.props
-C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.ServiPuntosUyAdmin.props
-C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.ServiPuntosUyAdmin.props
-C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\staticwebassets.pack.json
 C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\scopedcss\bundle\ServiPuntosUyAdmin.styles.css
 C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\scopedcss\projectbundle\ServiPuntosUyAdmin.bundle.scp.css
@@ -32,3 +27,6 @@ C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\S
 C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\ServiPuntosUyAdmin.pdb
 C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\ServiPuntosUyAdmin.genruntimeconfig.cache
 C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\ref\ServiPuntosUyAdmin.dll
+C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\bin\Debug\net8.0\ServiPuntosUyAdmin.staticwebassets.endpoints.json
+C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\staticwebassets.build.json.cache
+C:\Users\gonza\Documents\.NET\Proyecto\Backend - Backoffice\ServiPuntosUyAdmin\ServiPuntosUyAdmin\obj\Debug\net8.0\staticwebassets.build.endpoints.json
