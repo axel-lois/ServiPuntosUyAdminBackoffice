@@ -1,0 +1,56 @@
+@model ServiPuntosUyAdmin.Models.Product
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Editar Producto</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@using (Html.BeginForm("Edit", "Product", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.TenantId)
+
+    <div class="form-group mb-3">
+        <label>Nombre</label>
+        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", required = "required" })
+        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Descripción</label>
+        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 3 })
+        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group mb-3">
+        <label>URL de Imagen</label>
+        @Html.TextBoxFor(m => m.ImageUrl, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.ImageUrl, "", new { @class = "text-danger" })
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <div class="mt-2">
+                <img src="@Model.ImageUrl" style="width: 96px; height: 96px; object-fit:cover; border-radius:6px;" alt="Imagen actual" />
+            </div>
+        }
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Precio</label>
+        @Html.TextBoxFor(m => m.Price, new { @class = "form-control", type = "number", step = "0.01", min = "0" })
+        @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group form-check mb-4">
+        @Html.CheckBoxFor(m => m.AgeRestricted, new { @class = "form-check-input", id = "ageCheck" })
+        <label class="form-check-label" for="ageCheck">Restringido por edad</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    <a href="/Product/Index" class="btn btn-secondary ms-2">Cancelar</a>
+}

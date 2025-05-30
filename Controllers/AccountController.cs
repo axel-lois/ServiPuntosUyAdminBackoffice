@@ -38,29 +38,29 @@ namespace ServiPuntosUyAdmin.Controllers
                     // Ahora obtenemos el tipo de usuario usando el token
                     var meRequest = new HttpRequestMessage(HttpMethod.Get, "/api/Auth/me");
                     meRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                     var meResponse = await http.SendAsync(meRequest);
+
+                    string meBody = "";
 
                     if (meResponse.IsSuccessStatusCode)
                     {
-                        var meBody = await meResponse.Content.ReadAsStringAsync();
+                        meBody = await meResponse.Content.ReadAsStringAsync();
                         dynamic meRes = JsonConvert.DeserializeObject(meBody);
 
-                        // userType = 1 es admin central, userType = 2 admin tenant, etc.
                         int userType = (int)meRes.data.userType;
 
-                        // SOLO ADMIN (userType == 1)
                         if (userType == 1 || userType == 2)
                         {
                             HttpContext.Session.SetString("AdminLogged", "true");
                             HttpContext.Session.SetString("jwt_token", token);
 
-                            // Guardar el nombre (name) del admin en sesión
                             string adminName = meRes.data.name; // Ajustá si tu campo es diferente
                             HttpContext.Session.SetString("AdminName", adminName);
 
-                             // Guardar el nombre (name) del admin en sesión
                             string adminBranch = meRes.data.name; // Ajustá si tu campo es diferente
                             HttpContext.Session.SetString("AdminBranch", adminBranch);
+
                             return RedirectToAction("Index", "Home");
                         }
                         else
@@ -71,6 +71,9 @@ namespace ServiPuntosUyAdmin.Controllers
                     }
                     else
                     {
+                        meBody = await meResponse.Content.ReadAsStringAsync();
+                        System.Diagnostics.Debug.WriteLine("ME RESPONSE: " + meBody); 
+                        ViewBag.DebugMeBody = meBody; 
                         ViewBag.Error = "No se pudo verificar el tipo de usuario.";
                         return View();
                     }
@@ -82,6 +85,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 }
             }
         }
+
 
         public IActionResult Logout()
         {

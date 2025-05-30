@@ -22,7 +22,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://admin.servipuntos.local:7021;http://admin.servipuntos.local:5270",
+      "applicationUrl": "http://admin.servipuntos.local:5270",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

@@ -1,6 +1,61 @@
+@model IEnumerable<ServiPuntosUyAdmin.Models.Product>
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Productos</h2>
-<p>Pantalla de gestión de productos del sistema.</p>
+<a class="btn btn-success" href="/Product/Create"><i class="fa fa-plus"></i> Nuevo Producto</a>
+<br /><br />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Cadena</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Imagen</th>
+            <th>Precio</th>
+            <th>Restr. Edad</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            foreach(var p in Model)
+            {
+                <tr>
+                    <td>@p.Id</td>
+                    <td>@p.Tenant?.Name</td>
+                    <td>@p.Name</td>
+                    <td>@p.Description</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(p.ImageUrl))
+                        {
+                            <img src="@p.ImageUrl" alt="img" style="width:48px;height:48px;object-fit:cover;border-radius:6px;" />
+                        }
+                    </td>
+                    <td>@p.Price.ToString("C")</td>
+                    <td>@(p.AgeRestricted ? "Sí" : "No")</td>
+                    <td>
+                        <a href="/Product/Edit/@p.Id" class="btn-link"><i class="fa fa-edit"></i> Editar</a>
+                        @using (Html.BeginForm("Delete", "Product", FormMethod.Post, new { onsubmit = "return confirm('¿Seguro que desea eliminar este producto?');", style = "display:inline;" }))
+                        {
+                            @Html.Hidden("id", p.Id)
+                            <button type="submit" class="btn-link text-danger" style="border:none;background:none;padding:0;">
+                                <i class="fa fa-trash"></i> Eliminar
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="8" class="text-center">No hay productos registrados.</td>
+            </tr>
+        }
+    </tbody>
+</table>

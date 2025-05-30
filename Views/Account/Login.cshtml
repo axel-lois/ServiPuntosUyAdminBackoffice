@@ -1,6 +1,14 @@
 @{
     ViewData["Title"] = "Admin Login";
 }
+@if (ViewBag.DebugMeBody != null)
+{
+    <div class="alert alert-warning">
+        <b>DEBUG:</b>
+        <pre>@ViewBag.DebugMeBody</pre>
+    </div>
+}
+
 
 <link rel="stylesheet" href="~/css/auth.css" />
 
