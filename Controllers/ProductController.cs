@@ -28,6 +28,23 @@ namespace ServiPuntosUyAdmin.Controllers
             return View(productos);
         }
 
+        public async Task<List<Tenant>> ObtenerTenants()
+        {
+            List<Tenant> tenants = new List<Tenant>();
+            using (var client = new HttpClient())
+            {
+                // Si tenés un endpoint GET /api/Tenant que devuelve todos
+                var response = await client.GetAsync("http://localhost:5162/api/Tenant");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    tenants = JsonSerializer.Deserialize<List<Tenant>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                }
+            }
+            return tenants;
+        }
+
+
         // GET: Mostrar formulario de creación
         [HttpGet]
         public IActionResult Create()
