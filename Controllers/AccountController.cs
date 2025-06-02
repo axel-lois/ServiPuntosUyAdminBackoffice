@@ -50,7 +50,7 @@ namespace ServiPuntosUyAdmin.Controllers
 
                         int userType = (int)meRes.data.userType;
 
-                        if (userType == 1 || userType == 2)
+                        if (userType == 1 || userType == 2 || userType == 3)
                         {
                             HttpContext.Session.SetString("AdminLogged", "true");
                             HttpContext.Session.SetString("jwt_token", token);

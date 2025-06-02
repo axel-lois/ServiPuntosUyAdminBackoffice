@@ -18,37 +18,29 @@ namespace ServiPuntosUyAdmin.Controllers
 
             using (var client = new HttpClient())
             {
-                var response = await client.GetAsync("http://localhost:5162/api/Product");
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                }
+
+                var response = await client.GetAsync(_apiUrl);
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    productos = JsonSerializer.Deserialize<List<Product>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    var result = JsonSerializer.Deserialize<ProductListResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if (result != null && result.Data != null)
+                        productos = result.Data;
                 }
             }
             return View(productos);
-        }
-
-        public async Task<List<Tenant>> ObtenerTenants()
-        {
-            List<Tenant> tenants = new List<Tenant>();
-            using (var client = new HttpClient())
-            {
-                // Si tenés un endpoint GET /api/Tenant que devuelve todos
-                var response = await client.GetAsync("http://localhost:5162/api/Tenant");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    tenants = JsonSerializer.Deserialize<List<Tenant>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                }
-            }
-            return tenants;
         }
 
         [HttpGet]
         public IActionResult Create()
         {
             ViewData["Title"] = "Nuevo Producto";
-            // Tomá TenantId de la sesión, solo si es admin_tenant
             var userType = HttpContext.Session.GetString("user_type");
             var tenantIdStr = HttpContext.Session.GetString("tenant_id");
 
@@ -58,14 +50,12 @@ namespace ServiPuntosUyAdmin.Controllers
             {
                 product.TenantId = int.Parse(tenantIdStr);
             }
-            // Si necesitás que admin_central elija el tenant, traé la lista de tenants y poné en ViewBag
             return View(product);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(Product product)
         {
-            // Seguridad extra: asegurate que admin_tenant solo cree productos de su tenant
             var userType = HttpContext.Session.GetString("user_type");
             var tenantIdStr = HttpContext.Session.GetString("tenant_id");
             if (userType == "admin_tenant" && !string.IsNullOrEmpty(tenantIdStr))
@@ -101,42 +91,69 @@ namespace ServiPuntosUyAdmin.Controllers
             }
         }
 
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             Product producto = null;
             using (var client = new HttpClient())
             {
-                var response = await client.GetAsync($"http://localhost:5162/api/Product/{id}");
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                }
+
+                var response = await client.GetAsync($"{_apiUrl}/{id}");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    producto = JsonSerializer.Deserialize<Product>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    var apiResult = JsonSerializer.Deserialize<ProductResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if (apiResult != null && apiResult.Data != null)
+                        producto = apiResult.Data;
                 }
             }
             if (producto == null)
             {
-                return NotFound();
+                TempData["Error"] = "No se pudo encontrar el producto.";
+                return RedirectToAction("Index");
             }
+            Console.WriteLine($"GET Edit: ProductId={producto.ProductId}, Name={producto.Name}");
             return View(producto);
         }
 
-        // POST: /Product/Edit
         [HttpPost]
         public async Task<IActionResult> Edit(Product product)
         {
+            Console.WriteLine("ProductId recibido en POST Edit: " + product.ProductId);
             using (var client = new HttpClient())
             {
-                var json = JsonSerializer.Serialize(product);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                }
 
-                var response = await client.PostAsync("http://localhost:5162/api/Product/Update", content);
+                var json = JsonSerializer.Serialize(product, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                });
+                Console.WriteLine("JSON ENVIADO AL BACKEND: " + json); // <-- AGREGALO ACA
+
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync($"{_apiUrl}/Update", content);
+                Console.WriteLine("Editando producto con ProductId: " + product.ProductId);
+
+                var responseBody = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Status: {response.StatusCode} Body: {responseBody}");
 
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["Success"] = "Producto actualizado correctamente.";
                     return RedirectToAction("Index");
                 }
-                TempData["Error"] = "Error al actualizar el producto.";
+                TempData["Error"] = $"Error al actualizar el producto. Detalle: {responseBody}";
                 return View(product);
             }
         }
@@ -145,15 +162,23 @@ namespace ServiPuntosUyAdmin.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             Product producto = null;
-
-            // Primero obtenemos el producto a eliminar (para obtener todos los datos necesarios)
             using (var client = new HttpClient())
             {
-                var response = await client.GetAsync($"http://localhost:5162/api/Product/{id}");
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                }
+
+                // Primero obtenemos el producto para enviar el objeto completo al endpoint Delete
+                var response = await client.GetAsync($"{_apiUrl}/{id}");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    producto = JsonSerializer.Deserialize<Product>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    var apiResult = JsonSerializer.Deserialize<ProductResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if (apiResult != null && apiResult.Data != null)
+                        producto = apiResult.Data;
                 }
             }
 
@@ -163,13 +188,21 @@ namespace ServiPuntosUyAdmin.Controllers
                 return RedirectToAction("Index");
             }
 
-            // POST al endpoint Delete
             using (var client = new HttpClient())
             {
-                var json = JsonSerializer.Serialize(producto);
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                }
+                var json = JsonSerializer.Serialize(producto, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                });
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await client.PostAsync("http://localhost:5162/api/Product/Delete", content);
+                var response = await client.PostAsync($"{_apiUrl}/Delete", content);
 
                 if (response.IsSuccessStatusCode)
                 {

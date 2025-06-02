@@ -1,8 +1,20 @@
+using System.Text.Json.Serialization;
+
 namespace ServiPuntosUyAdmin.Models
 {
     public class Product
     {
-        public int Id { get; set; }
+        [JsonPropertyName("id")]
+        public int Id
+        {
+            get => ProductId;
+            set => ProductId = value;
+        }
+
+        [JsonPropertyName("productId")]
+        public int ProductId { get; set; }
+
+        [JsonPropertyName("tenantId")]
         public int TenantId { get; set; }
         public Tenant Tenant { get; set; }
         public string Name { get; set; }

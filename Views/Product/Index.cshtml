@@ -22,11 +22,11 @@
     </thead>
     <tbody>
         @if (Model.Any())
-        {
+        {c
             foreach(var p in Model)
             {
                 <tr>
-                    <td>@p.Id</td>
+                    <td>@p.ProductId</td>
                     <td>@p.Tenant?.Name</td>
                     <td>@p.Name</td>
                     <td>@p.Description</td>
@@ -39,10 +39,10 @@
                     <td>@p.Price.ToString("C")</td>
                     <td>@(p.AgeRestricted ? "Sí" : "No")</td>
                     <td>
-                        <a href="/Product/Edit/@p.Id" class="btn-link"><i class="fa fa-edit"></i> Editar</a>
+                        <a href="/Product/Edit/@p.ProductId" class="btn-link"><i class="fa fa-edit"></i> Editar</a>
                         @using (Html.BeginForm("Delete", "Product", FormMethod.Post, new { onsubmit = "return confirm('¿Seguro que desea eliminar este producto?');", style = "display:inline;" }))
                         {
-                            @Html.Hidden("id", p.Id)
+                            @Html.Hidden("id", p.ProductId)
                             <button type="submit" class="btn-link text-danger" style="border:none;background:none;padding:0;">
                                 <i class="fa fa-trash"></i> Eliminar
                             </button>
