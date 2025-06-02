@@ -5,15 +5,17 @@
 
 <h2>Nuevo Producto</h2>
 
-@if (ViewBag.Error != null)
+@if (TempData["Error"] != null)
 {
-    <div class="alert alert-danger">@ViewBag.Error</div>
+    <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    @Html.HiddenFor(m => m.TenantId) <!-- IMPORTANTE: así se manda el tenant correcto -->
 
     <div class="form-group">
         <label>Nombre</label>
@@ -40,5 +42,5 @@
         <label class="form-check-label" for="ageCheck">Restringido por edad</label>
     </div>
     <button type="submit" class="btn btn-success">Guardar</button>
-    <a href="/Tenant/Index" class="btn btn-secondary">Cancelar</a>
+    <a href="/Product/Index" class="btn btn-secondary">Cancelar</a>
 }

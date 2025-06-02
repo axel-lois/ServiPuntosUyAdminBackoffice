@@ -54,6 +54,13 @@ namespace ServiPuntosUyAdmin.Controllers
                         {
                             HttpContext.Session.SetString("AdminLogged", "true");
                             HttpContext.Session.SetString("jwt_token", token);
+                            HttpContext.Session.SetString("user_type", userType == 1 ? "admin_central" : "admin_tenant");
+
+                            if (userType == 2 && meRes.data.tenantId != null)
+                            {
+                                string tenantIdStr = meRes.data.tenantId.ToString();
+                                HttpContext.Session.SetString("tenant_id", tenantIdStr);
+                            }
 
                             string adminName = meRes.data.name; // Ajustá si tu campo es diferente
                             HttpContext.Session.SetString("AdminName", adminName);

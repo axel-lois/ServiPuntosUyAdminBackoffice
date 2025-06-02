@@ -44,24 +44,50 @@ namespace ServiPuntosUyAdmin.Controllers
             return tenants;
         }
 
-
-        // GET: Mostrar formulario de creación
         [HttpGet]
         public IActionResult Create()
         {
             ViewData["Title"] = "Nuevo Producto";
-            return View();
+            // Tomá TenantId de la sesión, solo si es admin_tenant
+            var userType = HttpContext.Session.GetString("user_type");
+            var tenantIdStr = HttpContext.Session.GetString("tenant_id");
+
+            var product = new Product();
+
+            if (userType == "admin_tenant" && !string.IsNullOrEmpty(tenantIdStr))
+            {
+                product.TenantId = int.Parse(tenantIdStr);
+            }
+            // Si necesitás que admin_central elija el tenant, traé la lista de tenants y poné en ViewBag
+            return View(product);
         }
 
-        // POST: Crear producto
         [HttpPost]
         public async Task<IActionResult> Create(Product product)
         {
+            // Seguridad extra: asegurate que admin_tenant solo cree productos de su tenant
+            var userType = HttpContext.Session.GetString("user_type");
+            var tenantIdStr = HttpContext.Session.GetString("tenant_id");
+            if (userType == "admin_tenant" && !string.IsNullOrEmpty(tenantIdStr))
+            {
+                product.TenantId = int.Parse(tenantIdStr);
+            }
+
             using (var client = new HttpClient())
             {
-                var json = JsonSerializer.Serialize(product);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                }
 
+                var json = JsonSerializer.Serialize(product, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                });
+
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await client.PostAsync($"{_apiUrl}/Create", content);
 
                 if (response.IsSuccessStatusCode)
