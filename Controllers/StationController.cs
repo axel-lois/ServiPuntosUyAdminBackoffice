@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Text.Json;
+
 
 namespace ServiPuntosUyAdmin.Controllers
 {
@@ -13,21 +15,69 @@ namespace ServiPuntosUyAdmin.Controllers
     {
         private readonly string apiBaseUrl = "http://localhost:5162/api/Branch";
 
-        // GET: Station/Index
         public async Task<IActionResult> Index()
         {
-            // Obtener el token de la sesión
-            string token = HttpContext.Session.GetString("jwt_token");
-            // Para poblar el combo de tenants, lo seguimos haciendo con FakeData, o podés hacerlo desde API
-            var tenants = FakeData.Tenants;
-            ViewBag.Tenants = tenants;
+            List<Station> estaciones = new List<Station>();
 
-            // En este ejemplo NO hay un endpoint para listar todas, así que mostramos vacío
-            // Cuando lo tengas, hacé el request aquí
-            var stations = new List<Station>();
-            ViewBag.Info = "No hay endpoint para listar estaciones aún.";
-            return View(stations);
+            using (var client = new HttpClient())
+            {
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                }
+
+                var response = await client.GetAsync("http://localhost:5162/api/Branch");
+                Console.WriteLine(">>> Response status code: " + response.StatusCode);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine(">>> JSON crudo recibido del backend:");
+                    Console.WriteLine(json);
+                    try
+                    {
+                        var result = System.Text.Json.JsonSerializer.Deserialize<StationListResponse>(
+                            json,
+                            new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                        );
+                        Console.WriteLine($">>> ¿result es null? {result == null}");
+                        Console.WriteLine($">>> ¿result.Data es null? {result?.Data == null}");
+                        Console.WriteLine($">>> result.Data.Count: {(result?.Data != null ? result.Data.Count : -1)}");
+
+                        if (result != null && result.Data != null)
+                        {
+                            foreach (var e in result.Data)
+                                Console.WriteLine($"Id: {e.Id}, TenantId: {e.TenantId}, Address: {e.Address}");
+                            estaciones = result.Data;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(">>> Excepción al deserializar:");
+                        Console.WriteLine(ex);
+                    }
+                }
+                else
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine(">>> ERROR! Status code: " + response.StatusCode);
+                    Console.WriteLine(">>> BODY: " + json);
+                }
+            }
+
+            Console.WriteLine("Estaciones que se envían a la vista: " + estaciones.Count);
+            foreach (var e in estaciones)
+            {
+                Console.WriteLine($"Id: {e.Id}, TenantId: {e.TenantId}, Address: {e.Address}");
+            }
+
+            ViewBag.Tenants = await ObtenerTenants();
+            return View(estaciones);
         }
+
+
 
         // GET: Station/Create
         public IActionResult Create()
@@ -204,5 +254,33 @@ namespace ServiPuntosUyAdmin.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
+
+        private async Task<List<Tenant>> ObtenerTenants()
+        {
+            var tenants = new List<Tenant>();
+            using (var client = new HttpClient())
+            {
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                }
+
+                var response = await client.GetAsync("http://localhost:5162/api/Tenant");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    // Si la respuesta tiene el formato { error:..., data:[...], message:... }
+                    var result = System.Text.Json.JsonSerializer.Deserialize<TenantListResponse>(json, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if (result != null && result.Data != null)
+                    {
+                        tenants = result.Data;
+                    }
+                }
+            }
+            return tenants;
+        }
+
     }
 }
