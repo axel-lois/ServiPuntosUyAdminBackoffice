@@ -9,7 +9,6 @@
     </div>
 }
 
-
 <link rel="stylesheet" href="~/css/auth.css" />
 
 <div class="admin-auth-card">
@@ -24,6 +23,14 @@
     <form asp-action="Login" method="post" class="admin-auth-form">
         <input type="email" name="email" placeholder="Email" required class="admin-auth-input" />
         <input type="password" name="password" placeholder="Contraseña" required class="admin-auth-input" />
+
+        <!-- NUEVO: Combo de tipo de usuario -->
+        <select name="userType" required class="admin-auth-input" style="margin-bottom: 16px;">
+            <option value="1">Admin Central</option>
+            <option value="2">Admin Tenant</option>
+            <option value="3">Admin Branch</option>
+        </select>
+
         <button type="submit" class="admin-auth-btn">Ingresar</button>
     </form>
     <div class="admin-auth-divider">Acceso exclusivo para administradores</div>

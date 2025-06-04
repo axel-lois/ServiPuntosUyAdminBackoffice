@@ -12,14 +12,13 @@ namespace ServiPuntosUyAdmin.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            // Siempre limpiá la sesión al mostrar el login
             HttpContext.Session.Remove("AdminLogged");
             HttpContext.Session.Remove("jwt_token");
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(string email, string password)
+        public async Task<IActionResult> Login(string email, string password, string userType)
         {
             using (var http = new HttpClient())
             {
@@ -27,7 +26,13 @@ namespace ServiPuntosUyAdmin.Controllers
                 var payload = new { email = email, password = password };
                 var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
 
-                var response = await http.PostAsync("/api/Auth/login", content);
+                // PASA el tipo de usuario en el header que pide el backend:
+                content.Headers.Add("X-User-Type", userType);
+
+                var request = new HttpRequestMessage(HttpMethod.Post, "/api/Auth/login");
+                request.Content = content;
+
+                var response = await http.SendAsync(request);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -48,24 +53,24 @@ namespace ServiPuntosUyAdmin.Controllers
                         meBody = await meResponse.Content.ReadAsStringAsync();
                         dynamic meRes = JsonConvert.DeserializeObject(meBody);
 
-                        int userType = (int)meRes.data.userType;
+                        int _userType = (int)meRes.data.userType;
 
-                        if (userType == 1 || userType == 2 || userType == 3)
+                        if (_userType == 1 || _userType == 2 || _userType == 3)
                         {
                             HttpContext.Session.SetString("AdminLogged", "true");
                             HttpContext.Session.SetString("jwt_token", token);
-                            HttpContext.Session.SetString("user_type", userType == 1 ? "admin_central" : "admin_tenant");
+                            HttpContext.Session.SetString("user_type", _userType == 1 ? "admin_central" : (_userType == 2 ? "admin_tenant" : "admin_branch"));
 
-                            if (userType == 2 && meRes.data.tenantId != null)
+                            if (_userType == 2 && meRes.data.tenantId != null)
                             {
                                 string tenantIdStr = meRes.data.tenantId.ToString();
                                 HttpContext.Session.SetString("tenant_id", tenantIdStr);
                             }
 
-                            string adminName = meRes.data.name; // Ajustá si tu campo es diferente
+                            string adminName = meRes.data.name;
                             HttpContext.Session.SetString("AdminName", adminName);
 
-                            string adminBranch = meRes.data.name; // Ajustá si tu campo es diferente
+                            string adminBranch = meRes.data.name;
                             HttpContext.Session.SetString("AdminBranch", adminBranch);
 
                             return RedirectToAction("Index", "Home");
@@ -92,7 +97,6 @@ namespace ServiPuntosUyAdmin.Controllers
                 }
             }
         }
-
 
         public IActionResult Logout()
         {

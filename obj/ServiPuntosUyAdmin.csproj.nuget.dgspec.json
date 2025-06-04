@@ -1,30 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\gonza\\Documents\\.NET\\Proyecto\\Backend - Backoffice\\ServiPuntosUyAdmin\\ServiPuntosUyAdmin\\ServiPuntosUyAdmin.csproj": {}
+    "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/ServiPuntosUyAdmin.csproj": {}
   },
   "projects": {
-    "C:\\Users\\gonza\\Documents\\.NET\\Proyecto\\Backend - Backoffice\\ServiPuntosUyAdmin\\ServiPuntosUyAdmin\\ServiPuntosUyAdmin.csproj": {
+    "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/ServiPuntosUyAdmin.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\gonza\\Documents\\.NET\\Proyecto\\Backend - Backoffice\\ServiPuntosUyAdmin\\ServiPuntosUyAdmin\\ServiPuntosUyAdmin.csproj",
+        "projectUniqueName": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/ServiPuntosUyAdmin.csproj",
         "projectName": "ServiPuntosUyAdmin",
-        "projectPath": "C:\\Users\\gonza\\Documents\\.NET\\Proyecto\\Backend - Backoffice\\ServiPuntosUyAdmin\\ServiPuntosUyAdmin\\ServiPuntosUyAdmin.csproj",
-        "packagesPath": "C:\\Users\\gonza\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\gonza\\Documents\\.NET\\Proyecto\\Backend - Backoffice\\ServiPuntosUyAdmin\\ServiPuntosUyAdmin\\obj\\",
+        "projectPath": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/ServiPuntosUyAdmin.csproj",
+        "packagesPath": "/home/gonzalo/.nuget/packages/",
+        "outputPath": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\gonza\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/home/gonzalo/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net8.0"
+          "net9.0"
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net8.0": {
-            "targetAlias": "net8.0",
+          "net9.0": {
+            "targetAlias": "net9.0",
             "projectReferences": {}
           }
         },
@@ -38,11 +38,11 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "9.0.200"
       },
       "frameworks": {
-        "net8.0": {
-          "targetAlias": "net8.0",
+        "net9.0": {
+          "targetAlias": "net9.0",
           "dependencies": {
             "Newtonsoft.Json": {
               "target": "Package",
@@ -68,7 +68,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.203/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
