@@ -26,11 +26,8 @@ namespace ServiPuntosUyAdmin.Controllers
                 var payload = new { email = email, password = password };
                 var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
 
-                // PASA el tipo de usuario en el header que pide el backend:
-                content.Headers.Add("X-User-Type", userType);
-
-                var request = new HttpRequestMessage(HttpMethod.Post, "/api/Auth/login");
-                request.Content = content;
+                var request = new HttpRequestMessage(HttpMethod.Post, "/api/Auth/login") { Content = content };
+                request.Headers.Add("X-User-Type", userType); // Por si backend lo espera en headers de request
 
                 var response = await http.SendAsync(request);
 
@@ -40,7 +37,7 @@ namespace ServiPuntosUyAdmin.Controllers
                     dynamic res = JsonConvert.DeserializeObject(responseBody);
                     string token = res.data.token;
 
-                    // Ahora obtenemos el tipo de usuario usando el token
+                    // Obtener el tipo real de usuario con el token (opcional, según tu backend)
                     var meRequest = new HttpRequestMessage(HttpMethod.Get, "/api/Auth/me");
                     meRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
@@ -53,33 +50,25 @@ namespace ServiPuntosUyAdmin.Controllers
                         meBody = await meResponse.Content.ReadAsStringAsync();
                         dynamic meRes = JsonConvert.DeserializeObject(meBody);
 
-                        int _userType = (int)meRes.data.userType;
+                        int userTypeReal = (int)meRes.data.userType;
 
-                        if (_userType == 1 || _userType == 2 || _userType == 3)
+                        HttpContext.Session.SetString("AdminLogged", "true");
+                        HttpContext.Session.SetString("jwt_token", token);
+                        HttpContext.Session.SetString("user_type", userTypeReal == 1 ? "admin_central" : userTypeReal == 2 ? "admin_tenant" : "admin_branch");
+
+                        if (userTypeReal == 2 && meRes.data.tenantId != null)
                         {
-                            HttpContext.Session.SetString("AdminLogged", "true");
-                            HttpContext.Session.SetString("jwt_token", token);
-                            HttpContext.Session.SetString("user_type", _userType == 1 ? "admin_central" : (_userType == 2 ? "admin_tenant" : "admin_branch"));
-
-                            if (_userType == 2 && meRes.data.tenantId != null)
-                            {
-                                string tenantIdStr = meRes.data.tenantId.ToString();
-                                HttpContext.Session.SetString("tenant_id", tenantIdStr);
-                            }
-
-                            string adminName = meRes.data.name;
-                            HttpContext.Session.SetString("AdminName", adminName);
-
-                            string adminBranch = meRes.data.name;
-                            HttpContext.Session.SetString("AdminBranch", adminBranch);
-
-                            return RedirectToAction("Index", "Home");
+                            string tenantIdStr = meRes.data.tenantId.ToString();
+                            HttpContext.Session.SetString("tenant_id", tenantIdStr);
                         }
-                        else
-                        {
-                            ViewBag.Error = "Solo los administradores pueden ingresar.";
-                            return View();
-                        }
+
+                        string adminName = meRes.data.name;
+                        HttpContext.Session.SetString("AdminName", adminName);
+
+                        string adminBranch = meRes.data.name;
+                        HttpContext.Session.SetString("AdminBranch", adminBranch);
+
+                        return RedirectToAction("Index", "Home");
                     }
                     else
                     {
@@ -97,6 +86,36 @@ namespace ServiPuntosUyAdmin.Controllers
                 }
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Signup(string email, string password, string name, string userType)
+        {
+            using (var http = new HttpClient())
+            {
+                http.BaseAddress = new Uri("http://localhost:5162/");
+                var payload = new { email = email, password = password, name = name };
+                var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"); 
+
+                var request = new HttpRequestMessage(HttpMethod.Post, "/api/Auth/signup") { Content = content };
+                request.Headers.Add("X-User-Type", userType);
+
+                var response = await http.SendAsync(request);
+
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "¡Usuario registrado correctamente! Ahora podés iniciar sesión.";
+                    return RedirectToAction("Login");
+                }
+                else
+                {
+                    ViewBag.Error = "No se pudo registrar el usuario. " + responseBody;
+                    return View("Login");
+                }
+            }
+        }
+
 
         public IActionResult Logout()
         {

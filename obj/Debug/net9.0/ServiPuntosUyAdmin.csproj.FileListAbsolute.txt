@@ -20,7 +20,7 @@
 /home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/scopedcss/Views/Shared/_Layout.cshtml.rz.scp.css
 /home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/scopedcss/bundle/ServiPuntosUyAdmin.styles.css
 /home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/scopedcss/projectbundle/ServiPuntosUyAdmin.bundle.scp.css
-/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/compressed/oahg0d1ius-fgd8132ktw.gz
+/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/compressed/oahg0d1ius-l5ie3qyggh.gz
 /home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/compressed/lx1o60eja3-nszkfdba9i.gz
 /home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/compressed/nix9jra3tu-fosamezn9b.gz
 /home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/compressed/2j5izdhjbg-61n19gt1b8.gz

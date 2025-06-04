@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "ig/wUG8OLsMI3FDuw2UEi5iBHBOAFZ1aYNwKm1PoLuA=",
+  "Hash": "miTALAbitPbW/7cw/kpRn/o9vtqiR2kqPldiXRia2EU=",
   "Source": "ServiPuntosUyAdmin",
   "BasePath": "_content/ServiPuntosUyAdmin",
   "Mode": "Default",
@@ -920,12 +920,12 @@
       "OriginalItemSpec": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/wwwroot/lib/jquery/dist/jquery.min.map"
     },
     {
-      "Identity": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/compressed/oahg0d1ius-fgd8132ktw.gz",
+      "Identity": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/compressed/oahg0d1ius-l5ie3qyggh.gz",
       "SourceId": "ServiPuntosUyAdmin",
       "SourceType": "Discovered",
       "ContentRoot": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/compressed/",
       "BasePath": "_content/ServiPuntosUyAdmin",
-      "RelativePath": "css/admin#[.{fingerprint=fgd8132ktw}]?.css.gz",
+      "RelativePath": "css/admin#[.{fingerprint=l5ie3qyggh}]?.css.gz",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Alternative",
@@ -934,8 +934,8 @@
       "RelatedAsset": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/wwwroot/css/admin.css",
       "AssetTraitName": "Content-Encoding",
       "AssetTraitValue": "gzip",
-      "Fingerprint": "g8hjja8wx7",
-      "Integrity": "AEcjseEJbNPK9uQaMh3/AlbLz4lTxo9xaJJ9gqHJFyQ=",
+      "Fingerprint": "vabt4akw4u",
+      "Integrity": "dwqnOZtyEAhXSKqyGjQ8eeFt3ixqLKnxJF169UXcurg=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/wwwroot/css/admin.css"
@@ -1396,8 +1396,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "fgd8132ktw",
-      "Integrity": "4Vzon9u2qjis0Z4tV7jTurQmvD9SNBsx16n1tz+vwb0=",
+      "Fingerprint": "l5ie3qyggh",
+      "Integrity": "af6zhlhBWwVpL8/m1yQfPb0uuGmPOJol+r51P9iTINw=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/css/admin.css"
@@ -2687,12 +2687,12 @@
   "Endpoints": [
     {
       "Route": "css/admin.css",
-      "AssetFile": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/compressed/oahg0d1ius-fgd8132ktw.gz",
+      "AssetFile": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/compressed/oahg0d1ius-l5ie3qyggh.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000758725341"
+          "Quality": "0.000737463127"
         }
       ],
       "ResponseHeaders": [
@@ -2702,15 +2702,15 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1317"
+          "Value": "1355"
         },
         {
           "Name": "ETag",
-          "Value": "\"AEcjseEJbNPK9uQaMh3/AlbLz4lTxo9xaJJ9gqHJFyQ=\""
+          "Value": "\"dwqnOZtyEAhXSKqyGjQ8eeFt3ixqLKnxJF169UXcurg=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 12:07:34 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:34 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2730,13 +2730,13 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"4Vzon9u2qjis0Z4tV7jTurQmvD9SNBsx16n1tz+vwb0=\""
+          "Value": "W/\"af6zhlhBWwVpL8/m1yQfPb0uuGmPOJol+r51P9iTINw=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-4Vzon9u2qjis0Z4tV7jTurQmvD9SNBsx16n1tz+vwb0="
+          "Value": "sha256-af6zhlhBWwVpL8/m1yQfPb0uuGmPOJol+r51P9iTINw="
         }
       ]
     },
@@ -2751,7 +2751,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "4564"
+          "Value": "4766"
         },
         {
           "Name": "Content-Type",
@@ -2759,11 +2759,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"4Vzon9u2qjis0Z4tV7jTurQmvD9SNBsx16n1tz+vwb0=\""
+          "Value": "\"af6zhlhBWwVpL8/m1yQfPb0uuGmPOJol+r51P9iTINw=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 12:07:34 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:34 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2773,13 +2773,13 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-4Vzon9u2qjis0Z4tV7jTurQmvD9SNBsx16n1tz+vwb0="
+          "Value": "sha256-af6zhlhBWwVpL8/m1yQfPb0uuGmPOJol+r51P9iTINw="
         }
       ]
     },
     {
       "Route": "css/admin.css.gz",
-      "AssetFile": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/compressed/oahg0d1ius-fgd8132ktw.gz",
+      "AssetFile": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/compressed/oahg0d1ius-l5ie3qyggh.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -2788,7 +2788,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1317"
+          "Value": "1355"
         },
         {
           "Name": "Content-Type",
@@ -2796,11 +2796,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"AEcjseEJbNPK9uQaMh3/AlbLz4lTxo9xaJJ9gqHJFyQ=\""
+          "Value": "\"dwqnOZtyEAhXSKqyGjQ8eeFt3ixqLKnxJF169UXcurg=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 12:07:34 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:34 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2818,18 +2818,18 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-AEcjseEJbNPK9uQaMh3/AlbLz4lTxo9xaJJ9gqHJFyQ="
+          "Value": "sha256-dwqnOZtyEAhXSKqyGjQ8eeFt3ixqLKnxJF169UXcurg="
         }
       ]
     },
     {
-      "Route": "css/admin.fgd8132ktw.css",
-      "AssetFile": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/compressed/oahg0d1ius-fgd8132ktw.gz",
+      "Route": "css/admin.l5ie3qyggh.css",
+      "AssetFile": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/compressed/oahg0d1ius-l5ie3qyggh.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000758725341"
+          "Quality": "0.000737463127"
         }
       ],
       "ResponseHeaders": [
@@ -2839,15 +2839,15 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1317"
+          "Value": "1355"
         },
         {
           "Name": "ETag",
-          "Value": "\"AEcjseEJbNPK9uQaMh3/AlbLz4lTxo9xaJJ9gqHJFyQ=\""
+          "Value": "\"dwqnOZtyEAhXSKqyGjQ8eeFt3ixqLKnxJF169UXcurg=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 12:07:34 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:34 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2867,13 +2867,13 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"4Vzon9u2qjis0Z4tV7jTurQmvD9SNBsx16n1tz+vwb0=\""
+          "Value": "W/\"af6zhlhBWwVpL8/m1yQfPb0uuGmPOJol+r51P9iTINw=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "fgd8132ktw"
+          "Value": "l5ie3qyggh"
         },
         {
           "Name": "label",
@@ -2881,12 +2881,12 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-4Vzon9u2qjis0Z4tV7jTurQmvD9SNBsx16n1tz+vwb0="
+          "Value": "sha256-af6zhlhBWwVpL8/m1yQfPb0uuGmPOJol+r51P9iTINw="
         }
       ]
     },
     {
-      "Route": "css/admin.fgd8132ktw.css",
+      "Route": "css/admin.l5ie3qyggh.css",
       "AssetFile": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/wwwroot/css/admin.css",
       "Selectors": [],
       "ResponseHeaders": [
@@ -2896,7 +2896,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "4564"
+          "Value": "4766"
         },
         {
           "Name": "Content-Type",
@@ -2904,11 +2904,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"4Vzon9u2qjis0Z4tV7jTurQmvD9SNBsx16n1tz+vwb0=\""
+          "Value": "\"af6zhlhBWwVpL8/m1yQfPb0uuGmPOJol+r51P9iTINw=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 12:07:34 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:34 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2918,7 +2918,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "fgd8132ktw"
+          "Value": "l5ie3qyggh"
         },
         {
           "Name": "label",
@@ -2926,13 +2926,13 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-4Vzon9u2qjis0Z4tV7jTurQmvD9SNBsx16n1tz+vwb0="
+          "Value": "sha256-af6zhlhBWwVpL8/m1yQfPb0uuGmPOJol+r51P9iTINw="
         }
       ]
     },
     {
-      "Route": "css/admin.fgd8132ktw.css.gz",
-      "AssetFile": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/compressed/oahg0d1ius-fgd8132ktw.gz",
+      "Route": "css/admin.l5ie3qyggh.css.gz",
+      "AssetFile": "/home/gonzalo/Documentos/Tecnologo en Informática/NET/BackEnd/BackOffice/ServiPuntosUyAdminBackoffice/obj/Debug/net9.0/compressed/oahg0d1ius-l5ie3qyggh.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -2941,7 +2941,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1317"
+          "Value": "1355"
         },
         {
           "Name": "Content-Type",
@@ -2949,11 +2949,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"AEcjseEJbNPK9uQaMh3/AlbLz4lTxo9xaJJ9gqHJFyQ=\""
+          "Value": "\"dwqnOZtyEAhXSKqyGjQ8eeFt3ixqLKnxJF169UXcurg=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 12:07:34 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:34 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2971,7 +2971,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "fgd8132ktw"
+          "Value": "l5ie3qyggh"
         },
         {
           "Name": "label",
@@ -2979,7 +2979,7 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-AEcjseEJbNPK9uQaMh3/AlbLz4lTxo9xaJJ9gqHJFyQ="
+          "Value": "sha256-dwqnOZtyEAhXSKqyGjQ8eeFt3ixqLKnxJF169UXcurg="
         }
       ]
     },
@@ -20970,7 +20970,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 17:50:29 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -21031,7 +21031,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 17:50:29 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -21076,7 +21076,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 17:50:29 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -21131,7 +21131,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 17:50:29 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -21192,7 +21192,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 17:50:29 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -21237,7 +21237,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 17:50:29 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -21292,7 +21292,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 17:50:29 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -21345,7 +21345,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 17:50:29 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -21382,7 +21382,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 17:50:29 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -21429,7 +21429,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 17:50:29 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -21482,7 +21482,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 17:50:29 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:51 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -21519,7 +21519,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 17:50:29 GMT"
+          "Value": "Wed, 04 Jun 2025 22:17:51 GMT"
         },
         {
           "Name": "Cache-Control",
