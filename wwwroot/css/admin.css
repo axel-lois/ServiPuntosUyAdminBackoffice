@@ -22,6 +22,8 @@ html, body {
     box-shadow: 2px 0 12px rgba(0,0,0,0.06);
     align-items: flex-start;
     padding-top: 0;
+    left: 0;
+    top: 0;
 }
 
 .sidebar-header {
@@ -66,12 +68,18 @@ html, body {
     color: #fff;
 }
 .sidebar-footer {
-    padding: 18px 14px 8px 24px;
+    width: 100%;
+    min-height: 44px;
+    box-sizing: border-box;
+    padding: 16px 0 10px 0;
     font-size: 0.96rem;
     border-top: 1px solid #393b5e;
     background: #23244a;
-    text-align: left;
+    text-align: center;
     margin-top: auto;
+    position: relative;
+    left: 0;
+    bottom: 0;
 }
 
 .admin-main {
@@ -246,3 +254,16 @@ html, body {
     font-size: 1rem;
 }
 
+.dashboard-widget-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow 0.2s;
+}
+.dashboard-widget-link:hover,
+.dashboard-widget-link:focus {
+    box-shadow: 0 0 0 4px #a5b4fc;
+    outline: none;
+    cursor: pointer;
+    background: #f0f6ff;
+}

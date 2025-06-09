@@ -3,22 +3,22 @@
 }
 
 <div class="dashboard-widgets">
-    <div class="dashboard-widget">
+    <a href="/Statistics/Users" class="dashboard-widget dashboard-widget-link">
         <div class="widget-title"><i class="fa-solid fa-users"></i> Usuarios</div>
         <div class="widget-value">@ViewBag.Usuarios</div>
-    </div>
-    <div class="dashboard-widget">
-        <div class="widget-title"><i class="fa-solid fa-coins"></i> Puntos canjeados</div>
-        <div class="widget-value">@ViewBag.PuntosCanjeados</div>
-    </div>
-    <div class="dashboard-widget">
+    </a>
+    <a href="/Statistics/Transaction" class="dashboard-widget dashboard-widget-link">
         <div class="widget-title"><i class="fa-solid fa-receipt"></i> Transacciones</div>
         <div class="widget-value">@ViewBag.Transacciones</div>
-    </div>
-    <div class="dashboard-widget">
+    </a>
+    <a href="/Statistics/Offers" class="dashboard-widget dashboard-widget-link">
         <div class="widget-title"><i class="fa-solid fa-gift"></i> Ofertas activas</div>
         <div class="widget-value">@ViewBag.OfertasActivas</div>
-    </div>
+    </a>
+    <a href="/Statistics/Points" class="dashboard-widget dashboard-widget-link">
+        <div class="widget-title"><i class="fa-solid fa-coins"></i> Puntos canjeados</div>
+        <div class="widget-value">@ViewBag.PuntosCanjeados</div>
+    </a>
 </div>
 
 <div class="dashboard-charts">
@@ -84,4 +84,3 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-

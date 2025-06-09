@@ -1,0 +1,48 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var stats = ViewBag.Statistics as ServiPuntosUyAdmin.Models.StatisticsData;
+}
+
+<h2>Usuarios</h2>
+<table class="table table-hover" id="usuariosTipoTable">
+    <thead>
+        <tr>
+            <th>Tipo de usuario</th>
+            <th class="text-center">Cantidad</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="clickable-row" data-tipo="central">
+            <td>Admin Central</td>
+            <td class="text-center">@stats?.Users?.ByType?.Central</td>
+        </tr>
+        <tr class="clickable-row" data-tipo="tenant">
+            <td>Admin Tenant</td>
+            <td class="text-center">@stats?.Users?.ByType?.Tenant</td>
+        </tr>
+        <tr class="clickable-row" data-tipo="branch">
+            <td>Admin Branch</td>
+            <td class="text-center">@stats?.Users?.ByType?.Branch</td>
+        </tr>
+        <tr class="clickable-row" data-tipo="enduser">
+            <td>Usuario Final</td>
+            <td class="text-center">@stats?.Users?.ByType?.EndUser</td>
+        </tr>
+    </tbody>
+</table>
+
+<style>
+    .clickable-row { cursor: pointer; }
+    .clickable-row.active { background: #e0e7ff; font-weight: bold; }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('.clickable-row').forEach(row => {
+        row.addEventListener('click', function() {
+            document.querySelectorAll('.clickable-row').forEach(r => r.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+});
+</script>

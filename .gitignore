@@ -1,0 +1,18 @@
+# Build results
+bin/
+obj/
+
+# VSCode settings
+.vscode/
+
+# Otros archivos temporales
+*.user
+*.suo
+*.vspscc
+*.vssscc
+*.dbmdl
+*.log
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

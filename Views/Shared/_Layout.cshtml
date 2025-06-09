@@ -5,6 +5,7 @@
     var userType = Context.Session.GetString("user_type") ?? "";
     var isLoginPage = (ViewContext.RouteData.Values["Controller"]?.ToString() == "Account"
                        && ViewContext.RouteData.Values["Action"]?.ToString() == "Login");
+    var tenantId = Context.Session.GetString("tenant_id"); // Para admin_tenant
 }
 
 <!DOCTYPE html>
@@ -44,7 +45,9 @@
                     <a class="sidebar-link" href="/Product/Index"><i class="fa-solid fa-box-open"></i> Productos</a>
                     <a class="sidebar-link" href="/Transaction/Index"><i class="fa-solid fa-receipt"></i> Transacciones</a>
                     <a class="sidebar-link" href="/Parameter/Index"><i class="fa-solid fa-cogs"></i> Parámetros Generales</a>
-                    <a class="sidebar-link" href="/Customization/Index"><i class="fa-solid fa-palette"></i> Personalización</a>
+                    <a class="sidebar-link" href="/Tenant/Personalization/@Context.Session.GetString("tenant_id")">
+                        <i class="fa-solid fa-palette"></i> Personalización
+                    </a>
                 }
                 @* --- Admin Branch --- *@
                 else if (userType == "admin_branch")
@@ -58,7 +61,7 @@
                 <a class="sidebar-link" href="/Account/Logout"><i class="fa-solid fa-sign-out-alt"></i> Cerrar sesión</a>
             </nav>
             <div class="sidebar-footer">
-                <small>Sesión: @currentUser</small>
+                <small>Sesión: <b>@currentUser</b></small>
             </div>
         </aside>
         <main class="admin-main">

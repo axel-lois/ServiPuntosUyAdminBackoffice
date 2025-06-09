@@ -1,0 +1,37 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var stats = ViewBag.Statistics as ServiPuntosUyAdmin.Models.StatisticsData;
+}
+
+<h2>Transacciones</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Estadística</th>
+            <th>Cantidad</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="clickable-row">
+            <td >Transacciones realizadas</td>
+            <td class="text-center">@(stats?.Transactions?.Total ?? 0)</td>
+        </tr>
+    </tbody>
+</table>
+
+<style>
+    .clickable-row { cursor: pointer; }
+    .clickable-row.active { background: #e0e7ff; font-weight: bold; }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('.clickable-row').forEach(row => {
+        row.addEventListener('click', function() {
+            document.querySelectorAll('.clickable-row').forEach(r => r.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+});
+</script>

@@ -189,5 +189,64 @@ namespace ServiPuntosUyAdmin.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
+
+        // GET: Tenant/Personalization/5
+        public async Task<IActionResult> Personalization(int id)
+        {
+            using (var client = new HttpClient())
+            {
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var response = await client.GetAsync($"http://localhost:5162/api/TenantUI/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var config = Newtonsoft.Json.JsonConvert.DeserializeObject<TenantUIConfig>(json);
+                    ViewBag.TenantId = id;
+                    return View(config);
+                }
+                else
+                {
+                    ViewBag.Error = "No se pudo obtener la configuración de personalización.";
+                    ViewBag.TenantId = id;
+                    return View(new TenantUIConfig());
+                }
+            }
+        }
+
+        // POST: Tenant/Personalization/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Personalization(int id, TenantUIConfig config)
+        {
+            using (var client = new HttpClient())
+            {
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(new
+                {
+                    imgUrl = config.ImgUrl,
+                    primaryColor = config.PrimaryColor,
+                    secondaryColor = config.SecondaryColor
+                });
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PutAsync($"http://localhost:5162/api/TenantUI/{id}", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "¡Personalización actualizada!";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ViewBag.Error = "Error al guardar la personalización.";
+                    return View(config);
+                }
+            }
+        }
     }
 }
