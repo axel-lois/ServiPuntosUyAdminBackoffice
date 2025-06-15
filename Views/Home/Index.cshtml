@@ -36,32 +36,19 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Simulamos datos para los charts
-    const labels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
-    const transacciones = [1200, 1800, 1500, 2200, 1700, 2100];
-    const puntos = [5000, 8000, 6000, 9000, 7000, 8800];
+    const labels        = @Html.Raw(ViewBag.ChartLabels);
+    const transacciones = @Html.Raw(ViewBag.TransaccionesData);
+    const puntos        = @Html.Raw(ViewBag.PuntosData);
 
-    // Chart de Transacciones
     new Chart(document.getElementById('transaccionesChart'), {
         type: 'bar',
         data: {
             labels: labels,
-            datasets: [{
-                label: 'Transacciones',
-                data: transacciones,
-                borderWidth: 2
-            }]
+            datasets: [{ label: 'Transacciones', data: transacciones, borderWidth: 2 }]
         },
-        options: {
-            plugins: { legend: { display: false } },
-            responsive: true,
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
+        options: { plugins:{legend:{display:false}}, responsive:true, scales:{ y:{ beginAtZero:true } } }
     });
 
-    // Chart de Puntos
     new Chart(document.getElementById('puntosChart'), {
         type: 'line',
         data: {
@@ -74,13 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 tension: 0.4
             }]
         },
-        options: {
-            plugins: { legend: { display: false } },
-            responsive: true,
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
+        options: { plugins:{legend:{display:false}}, responsive:true, scales:{ y:{ beginAtZero:true } } }
     });
 });
 </script>

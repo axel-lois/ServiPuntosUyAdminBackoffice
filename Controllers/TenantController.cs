@@ -10,7 +10,8 @@ namespace ServiPuntosUyAdmin.Controllers
 {
     public class TenantController : Controller
     {
-        private readonly string apiBaseUrl = "http://localhost:5162/api/Tenant"; 
+         private readonly string apiBaseUrl = "http://localhost:5162/api/Tenant";
+        private readonly string apiUiUrl    = "http://localhost:5162/api/TenantUI";
 
         // GET: Tenant/Index
         public async Task<IActionResult> Index()
@@ -193,27 +194,26 @@ namespace ServiPuntosUyAdmin.Controllers
         // GET: Tenant/Personalization/5
         public async Task<IActionResult> Personalization(int id)
         {
+            TenantUIConfig config = new TenantUIConfig();
             using (var client = new HttpClient())
             {
-                string token = HttpContext.Session.GetString("jwt_token");
+                string? token = HttpContext.Session.GetString("jwt_token");
                 if (!string.IsNullOrEmpty(token))
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                var response = await client.GetAsync($"http://localhost:5162/api/TenantUI/{id}");
-                if (response.IsSuccessStatusCode)
+                var resp = await client.GetAsync($"{apiUiUrl}/{id}");
+                if (resp.IsSuccessStatusCode)
                 {
-                    var json = await response.Content.ReadAsStringAsync();
-                    var config = Newtonsoft.Json.JsonConvert.DeserializeObject<TenantUIConfig>(json);
-                    ViewBag.TenantId = id;
-                    return View(config);
-                }
-                else
-                {
-                    ViewBag.Error = "No se pudo obtener la configuración de personalización.";
-                    ViewBag.TenantId = id;
-                    return View(new TenantUIConfig());
+                    var json = await resp.Content.ReadAsStringAsync();
+                    // deserializamos el wrapper { error, data, message }
+                    var wrapper = JsonConvert.DeserializeObject<ApiResponse<TenantUIConfig>>(json);
+                    if (wrapper is not null && wrapper.Data is not null)
+                        config = wrapper.Data;
                 }
             }
+
+            ViewBag.TenantId = id;
+            return View(config);
         }
 
         // POST: Tenant/Personalization/5
@@ -225,11 +225,12 @@ namespace ServiPuntosUyAdmin.Controllers
             {
                 string token = HttpContext.Session.GetString("jwt_token");
                 if (!string.IsNullOrEmpty(token))
-                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                    client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(new
+                var json = JsonConvert.SerializeObject(new
                 {
-                    imgUrl = config.ImgUrl,
+                    LogoUrl = config.LogoUrl,
                     primaryColor = config.PrimaryColor,
                     secondaryColor = config.SecondaryColor
                 });
@@ -238,16 +239,20 @@ namespace ServiPuntosUyAdmin.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
-                    TempData["Success"] = "¡Personalización actualizada!";
-                    return RedirectToAction("Index");
+                    // En lugar de RedirectToAction, devolvemos la misma vista
+                    ViewBag.Success = "¡Personalización actualizada correctamente!";
+                    ViewBag.TenantId = id;
+                    return View(config);
                 }
                 else
                 {
                     ViewBag.Error = "Error al guardar la personalización.";
+                    ViewBag.TenantId = id;
                     return View(config);
                 }
             }
         }
+
 
         // GET: /Tenant/ListTenant
         [HttpGet]

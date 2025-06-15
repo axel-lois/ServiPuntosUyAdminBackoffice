@@ -1,34 +1,43 @@
 @model ServiPuntosUyAdmin.Models.TenantUIConfig
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    var tenantId = ViewBag.TenantId;
+    ViewData["Title"] = "Personalización de Cadena";
+    var tenantId = ViewBag.TenantId as int? ?? 0;
 }
 
 <h2>Personalización de Cadena</h2>
+
+@if (ViewBag.Success != null)
+{
+    <div class="alert alert-success" id="successMsg">@ViewBag.Success</div>
+    <script>
+        // Tras 2 segundos redirigimos al dashboard
+        setTimeout(() => {
+            window.location = '@Url.Action("Index", "Home")';
+        }, 2000);
+    </script>
+}
 @if (ViewBag.Error != null)
 {
     <div class="alert alert-danger">@ViewBag.Error</div>
 }
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
 
-@using (Html.BeginForm("Personalization", "Tenant", new { id = tenantId }, FormMethod.Post))
-{
+<form asp-action="Personalization" asp-route-id="@tenantId" method="post">
     @Html.AntiForgeryToken()
     <div class="form-group">
         <label>Logo (URL)</label>
-        @Html.TextBoxFor(m => m.ImgUrl, new { @class = "form-control", placeholder = "URL de logo" })
+        <input asp-for="LogoUrl" class="form-control" />
+        @Html.ValidationMessageFor(m => m.LogoUrl, "", new { @class = "text-danger" })
     </div>
     <div class="form-group">
         <label>Color Primario</label>
-        @Html.TextBoxFor(m => m.PrimaryColor, new { @class = "form-control", placeholder = "#color o nombre" })
+        <input asp-for="PrimaryColor" type="color" class="form-control form-control-color" />
+        @Html.ValidationMessageFor(m => m.PrimaryColor, "", new { @class = "text-danger" })
     </div>
     <div class="form-group">
         <label>Color Secundario</label>
-        @Html.TextBoxFor(m => m.SecondaryColor, new { @class = "form-control", placeholder = "#color o nombre" })
+        <input asp-for="SecondaryColor" type="color" class="form-control form-control-color" />
+        @Html.ValidationMessageFor(m => m.SecondaryColor, "", new { @class = "text-danger" })
     </div>
     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-    <a href="/Tenant/Index" class="btn btn-secondary">Cancelar</a>
-}
+    <a asp-action="Index" asp-controller="Home" class="btn btn-secondary">Cancelar</a>
+</form>
