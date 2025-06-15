@@ -1,6 +1,36 @@
+@model List<ServiPuntosUyAdmin.Models.GeneralParameter>
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Parámetros Generales";
 }
 
-<h2>Parametros generales</h2>
-<p>Pantalla de gestión de parametros generales del sistema.</p>
+@if (TempData["Success"] != null) {
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null) {
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<a class="btn btn-success" href="/Parameter/Create"><i class="fa fa-plus"></i> Nuevo Parámetro</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Key</th>
+            <th>Value</th>
+            <th>Descripción</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var p in Model)
+    {
+        <tr>
+            <td>@p.Key</td>
+            <td>@p.Value</td>
+            <td>@p.Description</td>
+            <td>
+                <a href="/Parameter/Edit/@p.Key" class="btn-link"><i class="fa fa-edit"></i> Editar</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

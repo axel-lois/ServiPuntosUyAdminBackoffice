@@ -12,10 +12,10 @@
 <html lang="es">
 <head>
     <meta charset="utf-8" />
-    <title>Admin | ServiPuntos</title>
+    <title>@ViewData["Title"] – Admin | ServiPuntos</title>
     <link rel="stylesheet" href="~/css/admin.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
 @if (isLogged)
@@ -41,7 +41,7 @@
                     <a class="sidebar-link" href="/Product/Index"><i class="fa-solid fa-box-open"></i> Productos</a>
                     <a class="sidebar-link" href="/Station/Index"><i class="fa-solid fa-gas-pump"></i> Estaciones</a>
                     <a class="sidebar-link" href="/Parameter/Index"><i class="fa-solid fa-cogs"></i> Parámetros Generales</a>
-                    <a class="sidebar-link" href="/Tenant/Personalization/@Context.Session.GetString("tenant_id")">
+                    <a class="sidebar-link" href="/Tenant/Personalization/@tenantId">
                         <i class="fa-solid fa-palette"></i> Personalización
                     </a>
                 }
@@ -53,6 +53,7 @@
                     <a class="sidebar-link" href="/Product/Index"><i class="fa-solid fa-box-open"></i> Inventario Local</a>
                     <a class="sidebar-link" href="/Offer/Index"><i class="fa-solid fa-gift"></i> Ofertas</a>
                 }
+
                 <a class="sidebar-link" href="/Account/Logout"><i class="fa-solid fa-sign-out-alt"></i> Cerrar sesión</a>
             </nav>
             <div class="sidebar-footer">
@@ -71,14 +72,20 @@
 }
 else
 {
-    <div style="min-height: 100vh; display: flex; justify-content: center; align-items: center; background: #f4f6fb;">
+    <div style="min-height:100vh; display:flex; justify-content:center; align-items:center; background:#f4f6fb;">
         <div>
             @RenderBody()
         </div>
     </div>
 }
+
+<!-- libs globales -->
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.13/dist/jquery.validate.unobtrusive.min.js"></script>
+
+<!-- Sección opcional para scripts específicos de cada vista -->
+@RenderSection("Scripts", required: false)
+
 </body>
 </html>

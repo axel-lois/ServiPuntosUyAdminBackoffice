@@ -1,0 +1,27 @@
+@model ServiPuntosUyAdmin.Models.GeneralParameter
+@{
+    ViewData["Title"] = "Nuevo Parámetro General";
+}
+
+@if (TempData["Error"] != null) {
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label>Clave (Key)</label>
+        <input asp-for="Key" class="form-control" required />
+        @Html.ValidationMessageFor(m => m.Key, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        <label>Valor (Value)</label>
+        <input asp-for="Value" class="form-control" required />
+        @Html.ValidationMessageFor(m => m.Value, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        <label>Descripción</label>
+        <input asp-for="Description" class="form-control" required />
+        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+    </div>
+    <button type="submit" class="btn btn-success">Crear</button>
+    <a href="/GeneralParameter/Index" class="btn btn-secondary">Cancelar</a>
+</form>
