@@ -27,10 +27,14 @@
     <form asp-action="Login" method="post" class="admin-auth-form" id="authForm">
         <!-- Combo de tipo de usuario -->
         <select name="userType" id="userTypeSelect" class="admin-auth-input" required>
-            <option value="1">Admin Central</option>
-            <option value="2">Admin Tenant</option>
-            <option value="3">Admin Branch</option>
+            <option value="Central">Admin Central</option>
+            <option value="Tenant">Admin Tenant</option>
+            <option value="Branch">Admin Branch</option>
         </select>
+
+        <!-- Campo tenantName como input de texto -->
+        <input type="text" name="tenantName" placeholder="Nombre del Tenant" class="admin-auth-input" style="display:none" id="tenantNameInput" />
+
         <input type="email" name="email" placeholder="Email" required class="admin-auth-input" />
         <input type="password" name="password" placeholder="Contraseña" required class="admin-auth-input" />
         
@@ -38,32 +42,32 @@
         <input type="text" name="name" placeholder="Nombre" class="admin-auth-input" style="display:none" id="nameInput" />
 
         <button type="submit" class="admin-auth-btn" id="submitBtn">Ingresar</button>
-        <button type="button" class="admin-auth-btn" id="toggleBtn" style="background:#aaa">Registrarse</button>
     </form>
     <div class="admin-auth-divider">Acceso exclusivo para administradores</div>
 </div>
 
 <script>
     const form = document.getElementById('authForm');
-    const toggleBtn = document.getElementById('toggleBtn');
     const submitBtn = document.getElementById('submitBtn');
     const nameInput = document.getElementById('nameInput');
+    const toggleBtn = document.getElementById('toggleBtn');
+    const userTypeSelect = document.getElementById('userTypeSelect');
+    const tenantNameInput = document.getElementById('tenantNameInput');
     let isSignup = false;
 
-    toggleBtn.addEventListener('click', function () {
-        isSignup = !isSignup;
-        if (isSignup) {
-            nameInput.style.display = '';
-            submitBtn.innerText = 'Registrarse';
-            toggleBtn.innerText = 'Ya tengo cuenta';
-            document.getElementById('form-title').innerText = 'Registrarse';
-            form.action = '/Account/Signup';
+    // Mostrar el campo tenantName solo para Tenant/Branch
+    function handleUserTypeChange() {
+        if (userTypeSelect.value === 'Tenant' || userTypeSelect.value === 'Branch') {
+            tenantNameInput.style.display = '';
+            tenantNameInput.required = true;
         } else {
-            nameInput.style.display = 'none';
-            submitBtn.innerText = 'Ingresar';
-            toggleBtn.innerText = 'Registrarse';
-            document.getElementById('form-title').innerText = 'Panel de Administración';
-            form.action = '/Account/Login';
+            tenantNameInput.style.display = 'none';
+            tenantNameInput.required = false;
         }
-    });
+    }
+
+    userTypeSelect.addEventListener('change', handleUserTypeChange);
+
+    // Llamar al menos una vez para el estado inicial
+    handleUserTypeChange();
 </script>

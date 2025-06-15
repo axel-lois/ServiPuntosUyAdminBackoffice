@@ -20,7 +20,6 @@
     <thead>
         <tr>
             <th>Id</th>
-            <th>Cadena</th>
             <th>Dirección</th>
             <th>Latitud</th>
             <th>Longitud</th>
@@ -36,7 +35,6 @@
             var tenantName = tenants?.FirstOrDefault(t => t.Id == s.TenantId)?.Name ?? "-";
             <tr>
                 <td>@s.Id</td>
-                <td>@tenantName</td>
                 <td>@s.Address</td>
                 <td>@s.Latitud</td>
                 <td>@s.Longitud</td>

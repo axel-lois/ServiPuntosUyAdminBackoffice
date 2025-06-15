@@ -18,7 +18,7 @@ namespace ServiPuntosUyAdmin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(string email, string password, string userType)
+        public async Task<IActionResult> Login(string email, string password, string userType, string tenantName = null)
         {
             using (var http = new HttpClient())
             {
@@ -27,7 +27,12 @@ namespace ServiPuntosUyAdmin.Controllers
                 var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
 
                 var request = new HttpRequestMessage(HttpMethod.Post, "/api/Auth/login") { Content = content };
-                request.Headers.Add("X-User-Type", userType); // Por si backend lo espera en headers de request
+                request.Headers.Add("X-User-Type", userType);
+
+                if ((userType == "Tenant" || userType == "Branch") && !string.IsNullOrEmpty(tenantName))
+                {
+                    request.Headers.Add("X-Tenant-Name", tenantName);
+                }
 
                 var response = await http.SendAsync(request);
 

@@ -30,12 +30,8 @@
                 @* --- Admin Central --- *@
                 @if (userType == "admin_central")
                 {
-                    <a class="sidebar-link" href="/Home/Index"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-                    <a class="sidebar-link" href="/Admin/Index"><i class="fa-solid fa-user-shield"></i> Administradores</a>
+                    <a class="sidebar-link" href="/Home/Index"><i class="fa-solid fa-chart-line"></i> Monitoreo del sistema</a>
                     <a class="sidebar-link" href="/Parameter/Index"><i class="fa-solid fa-cogs"></i> Parámetros Generales</a>
-                    <a class="sidebar-link" href="/Monitor/Index"><i class="fa-solid fa-desktop"></i> Monitoreo del sistema</a>
-                    <a class="sidebar-link" href="/Notification/Index"><i class="fa-solid fa-bell"></i> Notificaciones</a>
-                    <a class="sidebar-link" href="/Customization/Index"><i class="fa-solid fa-palette"></i> Personalización</a>
                 }
                 @* --- Admin Tenant --- *@
                 else if (userType == "admin_tenant")
@@ -43,7 +39,7 @@
                     <a class="sidebar-link" href="/Home/Index"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
                     <a class="sidebar-link" href="/Offer/Index"><i class="fa-solid fa-gift"></i> Ofertas</a>
                     <a class="sidebar-link" href="/Product/Index"><i class="fa-solid fa-box-open"></i> Productos</a>
-                    <a class="sidebar-link" href="/Transaction/Index"><i class="fa-solid fa-receipt"></i> Transacciones</a>
+                    <a class="sidebar-link" href="/Station/Index"><i class="fa-solid fa-gas-pump"></i> Estaciones</a>
                     <a class="sidebar-link" href="/Parameter/Index"><i class="fa-solid fa-cogs"></i> Parámetros Generales</a>
                     <a class="sidebar-link" href="/Tenant/Personalization/@Context.Session.GetString("tenant_id")">
                         <i class="fa-solid fa-palette"></i> Personalización
@@ -56,7 +52,6 @@
                     <a class="sidebar-link" href="/Station/Index"><i class="fa-solid fa-gas-pump"></i> Mi Estación</a>
                     <a class="sidebar-link" href="/Product/Index"><i class="fa-solid fa-box-open"></i> Inventario Local</a>
                     <a class="sidebar-link" href="/Offer/Index"><i class="fa-solid fa-gift"></i> Ofertas</a>
-                    <a class="sidebar-link" href="/Transaction/Index"><i class="fa-solid fa-receipt"></i> Transacciones</a>
                 }
                 <a class="sidebar-link" href="/Account/Logout"><i class="fa-solid fa-sign-out-alt"></i> Cerrar sesión</a>
             </nav>

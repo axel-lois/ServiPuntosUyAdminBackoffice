@@ -12,32 +12,6 @@
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     @Html.HiddenFor(m => m.Id)
-
-    <div class="form-group">
-        <label>Cadena (Tenant)</label>
-        <select name="TenantId" class="form-control" required @(singleTenant ? "disabled" : "")>
-            @if (!singleTenant)
-            {
-                <option value="">Seleccione...</option>
-            }
-            @foreach (var tenant in tenants)
-            {
-                if (tenant.Id == Model.TenantId)
-                {
-                    <option value="@tenant.Id" selected>@tenant.Name</option>
-                }
-                else
-                {
-                    <option value="@tenant.Id">@tenant.Name</option>
-                }
-            }
-        </select>
-        @Html.ValidationMessageFor(m => m.TenantId, "", new { @class = "text-danger" })
-        @if (singleTenant)
-        {
-            <input type="hidden" name="TenantId" value="@Model.TenantId" />
-        }
-    </div>
     <div class="form-group">
         <label>Dirección</label>
         @Html.TextBoxFor(m => m.Address, new { @class = "form-control", required = "required" })

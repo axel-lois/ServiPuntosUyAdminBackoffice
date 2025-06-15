@@ -248,5 +248,31 @@ namespace ServiPuntosUyAdmin.Controllers
                 }
             }
         }
+
+        // GET: /Tenant/ListTenant
+        [HttpGet]
+        public async Task<IActionResult> ListTenant()
+        {
+            using (var client = new HttpClient())
+            {
+                // Token opcional, si querés protección
+                string token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var response = await client.GetAsync($"{apiBaseUrl}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var responseObj = JsonConvert.DeserializeObject<TenantListResponse>(json);
+                    if (responseObj != null && responseObj.Data != null)
+                    {
+                        var result = responseObj.Data.Select(t => new { t.Id, t.Name });
+                        return Json(result);
+                    }
+                }
+                return Json(new List<object>());
+            }
+        }
     }
 }

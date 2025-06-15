@@ -13,6 +13,71 @@ namespace ServiPuntosUyAdmin.Controllers
     {
         private readonly string apiBaseUrl = "http://localhost:5162/api/Branch";
 
+        // GET: Station/Index
+        public async Task<IActionResult> Index()
+        {
+            List<Tenant> tenants = new List<Tenant>();
+            var userType = HttpContext.Session.GetString("user_type");
+            var stations = new List<Station>();
+
+            if (userType == "admin_tenant")
+            {
+                var tenantIdStr = HttpContext.Session.GetString("tenant_id");
+                if (!string.IsNullOrEmpty(tenantIdStr) && int.TryParse(tenantIdStr, out int tenantId))
+                {
+                    using (var client = new HttpClient())
+                    {
+                        string token = HttpContext.Session.GetString("jwt_token");
+                        if (!string.IsNullOrEmpty(token))
+                            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                        // Traer todas las estaciones y filtrar por tenant (o armá el endpoint en la API para esto)
+                        var response = await client.GetAsync("http://localhost:5162/api/Branch");
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var json = await response.Content.ReadAsStringAsync();
+                            var result = System.Text.Json.JsonSerializer.Deserialize<StationListResponse>(json, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                            if (result != null && result.Data != null)
+                                stations = result.Data.Where(s => s.TenantId == tenantId).ToList();
+                        }
+
+                        // Cargar solo su tenant para el ViewBag
+                        var respTenant = await client.GetAsync($"http://localhost:5162/api/Tenant/{tenantId}");
+                        if (respTenant.IsSuccessStatusCode)
+                        {
+                            var json = await respTenant.Content.ReadAsStringAsync();
+                            var tenant = System.Text.Json.JsonSerializer.Deserialize<Tenant>(json, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                            if (tenant != null)
+                                tenants.Add(tenant);
+                        }
+                    }
+                }
+            }
+            else // admin_central
+            {
+                using (var client = new HttpClient())
+                {
+                    string token = HttpContext.Session.GetString("jwt_token");
+                    if (!string.IsNullOrEmpty(token))
+                        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                    var response = await client.GetAsync("http://localhost:5162/api/Branch");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        var result = System.Text.Json.JsonSerializer.Deserialize<StationListResponse>(json, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        if (result != null && result.Data != null)
+                            stations = result.Data;
+                    }
+
+                    tenants = await ObtenerTenants();
+                }
+            }
+
+            ViewBag.Tenants = tenants;
+            return View(stations);
+        }
+
         // --- Reutilizable: Obtener todos los tenants ---
         private async Task<List<Tenant>> ObtenerTenants()
         {
@@ -40,10 +105,11 @@ namespace ServiPuntosUyAdmin.Controllers
         {
             List<Tenant> tenants = new List<Tenant>();
             var userType = HttpContext.Session.GetString("user_type");
+            var tenantIdStr = HttpContext.Session.GetString("tenant_id");
+            System.Diagnostics.Debug.WriteLine($"[DEBUG] user_type: {userType}, tenant_id: {tenantIdStr}");
 
             if (userType == "admin_tenant")
             {
-                var tenantIdStr = HttpContext.Session.GetString("tenant_id");
                 if (!string.IsNullOrEmpty(tenantIdStr) && int.TryParse(tenantIdStr, out int tenantId))
                 {
                     using (var client = new HttpClient())
@@ -53,20 +119,35 @@ namespace ServiPuntosUyAdmin.Controllers
                             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
                         var resp = await client.GetAsync($"http://localhost:5162/api/Tenant/{tenantId}");
+                        var json = await resp.Content.ReadAsStringAsync();
+                        System.Diagnostics.Debug.WriteLine($"[DEBUG] Tenant API resp: {json}");
+
                         if (resp.IsSuccessStatusCode)
                         {
-                            var json = await resp.Content.ReadAsStringAsync();
                             var tenant = System.Text.Json.JsonSerializer.Deserialize<Tenant>(json, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                             if (tenant != null)
+                            {
                                 tenants.Add(tenant);
+                                System.Diagnostics.Debug.WriteLine($"[DEBUG] Agregado tenant: {tenant.Id} - {tenant.Name}");
+                            }
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debug.WriteLine("[DEBUG] Error al obtener tenant desde API");
                         }
                     }
                 }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("[DEBUG] tenantIdStr vacío o inválido");
+                }
             }
-            else // admin_central u otro
+            else // admin_central
             {
                 tenants = await ObtenerTenants();
             }
+
+            System.Diagnostics.Debug.WriteLine($"[DEBUG] Tenants count para view: {tenants.Count}");
 
             ViewBag.Tenants = tenants;
             return View(new Station
@@ -74,6 +155,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 TenantId = tenants.Count == 1 ? tenants[0].Id : 0 // Preselecciona si solo hay uno
             });
         }
+
 
         // --- POST: Station/Create ---
         [HttpPost]
@@ -295,18 +377,20 @@ namespace ServiPuntosUyAdmin.Controllers
         // GET: Station/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            // Cargar datos para confirmar eliminación
             using (var client = new HttpClient())
             {
                 string token = HttpContext.Session.GetString("jwt_token");
                 if (!string.IsNullOrEmpty(token))
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                var response = await client.GetAsync($"{apiBaseUrl}/{id}");
+                // Solo se puede hacer GET de todas, no por id
+                var response = await client.GetAsync($"{apiBaseUrl}");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    var station = JsonConvert.DeserializeObject<Station>(json);
+                    var result = System.Text.Json.JsonSerializer.Deserialize<StationListResponse>(json, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    var station = result?.Data?.FirstOrDefault(s => s.Id == id);
+
                     if (station == null) return NotFound();
                     return View(station);
                 }
