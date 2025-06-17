@@ -1,0 +1,27 @@
+@model IEnumerable<ServiPuntosUyAdmin.Models.Service>
+@{
+  Layout = "_Layout";
+}
+<h2>Servicios de Mi Estación</h2>
+<a class="btn btn-success" asp-action="Create"><i class="fa fa-plus"></i> Nuevo Servicio</a>
+@if(TempData["Success"]!=null){
+  <div class="alert alert-success">@TempData["Success"]</div>
+}
+<table class="table mt-3">
+  <thead>
+    <tr><th>Nombre</th><th>Precio</th><th>Horarios</th><th></th></tr>
+  </thead>
+  <tbody>
+  @foreach(var s in Model){
+    <tr>
+      <td>@s.Name</td>
+      <td>@s.Price</td>
+      <td>@s.StartTime – @s.EndTime</td>
+      <td>
+        <a asp-action="Edit" asp-route-id="@s.Id" class="btn btn-sm btn-primary">Editar</a>
+        <a asp-action="Delete" asp-route-id="@s.Id" class="btn btn-sm btn-danger">Eliminar</a>
+      </td>
+    </tr>
+  }
+  </tbody>
+</table>

@@ -1,11 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using ServiPuntosUyAdmin.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using System.Linq;
+
+// Aliases para evitar ambigüedad
+using JsonNet       = Newtonsoft.Json;
+using SystemJson    = System.Text.Json;
+using System.Net.Http.Headers; 
 
 namespace ServiPuntosUyAdmin.Controllers
 {
@@ -426,7 +432,59 @@ namespace ServiPuntosUyAdmin.Controllers
             }
         }
 
-        
+        // GET: Station/Hours
+        [HttpGet]
+        public IActionResult Hours()
+        {
+            // Sólo Admin Branch
+            if (!int.TryParse(HttpContext.Session.GetString("branch_id"), out var branchId))
+                return RedirectToAction("Login", "Account");
 
+            // Formulario vacío (o podrías precargar valores fijos)
+            var vm = new StationHoursDto
+            {
+                BranchId = branchId
+            };
+            return View(vm);
+        }
+
+        // POST: Station/Hours
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Hours(StationHoursDto model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            // Armo el payload
+            var payload = new
+            {
+                branchId    = model.BranchId,
+                openTime    = model.OpenTime,
+                closingTime = model.ClosingTime
+            };
+
+            using var client = new HttpClient();
+            var token = HttpContext.Session.GetString("jwt_token");
+            if (!string.IsNullOrEmpty(token))
+                client.DefaultRequestHeaders.Authorization = 
+                    new AuthenticationHeaderValue("Bearer", token);
+
+            // Serializamos y enviamos
+            var json = JsonNet.JsonConvert.SerializeObject(payload);
+            using var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var resp = await client.PostAsync($"{apiBaseUrl}/hours", content);
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                var error = await resp.Content.ReadAsStringAsync();
+                TempData["Error"] = "No se pudieron guardar los horarios: " + error;
+                return View(model);
+            }
+
+            TempData["Success"] = "Horarios actualizados correctamente";
+            // Volvemos a mostrar el formulario (vacío o con el mismo llamado GET)
+            return RedirectToAction(nameof(Hours));
+        }
     }
 }

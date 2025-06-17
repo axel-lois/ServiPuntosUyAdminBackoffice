@@ -4,6 +4,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Net.Http.Headers;
 
 namespace ServiPuntosUyAdmin.Controllers
 {
@@ -20,76 +22,78 @@ namespace ServiPuntosUyAdmin.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string email, string password, string userType, string tenantName = null)
         {
-            using (var http = new HttpClient())
+            using var http = new HttpClient { BaseAddress = new Uri("http://localhost:5162") };
+            // 1) Login
+            var loginPayload = new { email, password };
+            var loginContent = new StringContent(JsonConvert.SerializeObject(loginPayload), Encoding.UTF8, "application/json");
+            var loginRequest = new HttpRequestMessage(HttpMethod.Post, "/api/Auth/login") { Content = loginContent };
+            loginRequest.Headers.Add("X-User-Type", userType);
+            if ((userType == "Tenant" || userType == "Branch") && !string.IsNullOrEmpty(tenantName))
+                loginRequest.Headers.Add("X-Tenant-Name", tenantName);
+
+            var loginResp = await http.SendAsync(loginRequest);
+            if (!loginResp.IsSuccessStatusCode)
             {
-                http.BaseAddress = new Uri("http://localhost:5162/");
-                var payload = new { email = email, password = password };
-                var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
-
-                var request = new HttpRequestMessage(HttpMethod.Post, "/api/Auth/login") { Content = content };
-                request.Headers.Add("X-User-Type", userType);
-
-                if ((userType == "Tenant" || userType == "Branch") && !string.IsNullOrEmpty(tenantName))
-                {
-                    request.Headers.Add("X-Tenant-Name", tenantName);
-                }
-
-                var response = await http.SendAsync(request);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseBody = await response.Content.ReadAsStringAsync();
-                    dynamic res = JsonConvert.DeserializeObject(responseBody);
-                    string token = res.data.token;
-
-                    // Obtener el tipo real de usuario con el token (opcional, según tu backend)
-                    var meRequest = new HttpRequestMessage(HttpMethod.Get, "/api/Auth/me");
-                    meRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-                    var meResponse = await http.SendAsync(meRequest);
-
-                    string meBody = "";
-
-                    if (meResponse.IsSuccessStatusCode)
-                    {
-                        meBody = await meResponse.Content.ReadAsStringAsync();
-                        dynamic meRes = JsonConvert.DeserializeObject(meBody);
-
-                        int userTypeReal = (int)meRes.data.userType;
-
-                        HttpContext.Session.SetString("AdminLogged", "true");
-                        HttpContext.Session.SetString("jwt_token", token);
-                        HttpContext.Session.SetString("user_type", userTypeReal == 1 ? "admin_central" : userTypeReal == 2 ? "admin_tenant" : "admin_branch");
-
-                        if (userTypeReal == 2 && meRes.data.tenantId != null)
-                        {
-                            string tenantIdStr = meRes.data.tenantId.ToString();
-                            HttpContext.Session.SetString("tenant_id", tenantIdStr);
-                        }
-
-                        string adminName = meRes.data.name;
-                        HttpContext.Session.SetString("AdminName", adminName);
-
-                        string adminBranch = meRes.data.name;
-                        HttpContext.Session.SetString("AdminBranch", adminBranch);
-
-                        return RedirectToAction("Index", "Home");
-                    }
-                    else
-                    {
-                        meBody = await meResponse.Content.ReadAsStringAsync();
-                        System.Diagnostics.Debug.WriteLine("ME RESPONSE: " + meBody); 
-                        ViewBag.DebugMeBody = meBody; 
-                        ViewBag.Error = "No se pudo verificar el tipo de usuario.";
-                        return View();
-                    }
-                }
-                else
-                {
-                    ViewBag.Error = "Usuario o contraseña incorrectos.";
-                    return View();
-                }
+                ViewBag.Error = "Usuario o contraseña incorrectos.";
+                return View();
             }
+
+            // 2) Extraer token
+            var loginJson = await loginResp.Content.ReadAsStringAsync();
+            var loginObj  = JObject.Parse(loginJson);
+            var token     = loginObj["data"]?["token"]?.Value<string>();
+            if (string.IsNullOrEmpty(token))
+            {
+                ViewBag.Error = "No se recibió token del servidor.";
+                return View();
+            }
+
+            // 3) /api/Auth/me
+            var meRequest = new HttpRequestMessage(HttpMethod.Get, "/api/Auth/me");
+            meRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var meResp = await http.SendAsync(meRequest);
+            if (!meResp.IsSuccessStatusCode)
+            {
+                ViewBag.Error = "No se pudo verificar el tipo de usuario.";
+                return View();
+            }
+
+            var meJson = await meResp.Content.ReadAsStringAsync();
+            var meObj  = JObject.Parse(meJson);
+            var data   = meObj["data"];
+            if (data == null)
+            {
+                ViewBag.Error = "Respuesta inesperada del servidor.";
+                return View();
+            }
+
+            // 4) Leer userType, tenantId y branchId
+            int  userTypeReal  = data["userType"]?.Value<int>()   ?? 0;
+            int? tenantIdValue = data["tenantId"]?.Value<int?>();
+            int? branchIdValue = data["branchId"]?.Value<int?>();
+            string nameValue   = data["name"]?.Value<string>()   ?? "";
+
+            // 5) Guardar en sesión
+            var session = HttpContext.Session;
+            session.SetString("AdminLogged", "true");
+            session.SetString("jwt_token",   token);
+            session.SetString("user_type",
+                userTypeReal == 1 ? "admin_central" :
+                userTypeReal == 2 ? "admin_tenant" :
+                                    "admin_branch"
+            );
+
+            if (userTypeReal == 2 && tenantIdValue.HasValue)
+                session.SetString("tenant_id", tenantIdValue.Value.ToString());
+
+            // <<-- ESTE BLOQUE ES NUEVO, ASEGÚRATE DE INCLUIRLO
+            if (userTypeReal == 3 && branchIdValue.HasValue)
+                session.SetString("branch_id", branchIdValue.Value.ToString());
+            // -->>
+
+            session.SetString("AdminName", nameValue);
+
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
