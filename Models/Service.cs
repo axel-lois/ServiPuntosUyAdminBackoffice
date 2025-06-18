@@ -1,14 +1,40 @@
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace ServiPuntosUyAdmin.Models
 {
+    public class ServiceListResponse
+    {
+        [JsonPropertyName("error")]
+        public bool Error { get; set; }
+
+        
+        [JsonPropertyName("data")]
+        public List<Service> Data { get; set; }
+
+        [JsonPropertyName("message")]
+        public string Message { get; set; }
+    }
+
     public class Service
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }
 
-        [JsonPropertyName("branchId")]
+        // <-- PARA CREATE Y EDIT VIEWS
+        [JsonIgnore] 
         public int BranchId { get; set; }
+
+        [JsonIgnore] 
+        public TimeSpan StartTime { get; set; }
+
+        [JsonIgnore] 
+        public TimeSpan EndTime { get; set; }
+
+        // <-- LO QUE YA TENÍAS
+        [JsonPropertyName("tenantId")]
+        public int TenantId { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; }
@@ -22,22 +48,18 @@ namespace ServiPuntosUyAdmin.Models
         [JsonPropertyName("ageRestricted")]
         public bool AgeRestricted { get; set; }
 
-        [JsonPropertyName("startTime")]
-        public string StartTime { get; set; }
-
-        [JsonPropertyName("endTime")]
-        public string EndTime { get; set; }
+        [JsonPropertyName("availabilities")]
+        public List<Availability> Availabilities { get; set; }
     }
 
-    public class ServiceListResponse
+    public class Availability
     {
-        [JsonPropertyName("error")]
-        public bool Error { get; set; }
+        [JsonPropertyName("startTime")]
+        public TimeSpan StartTime { get; set; }
 
-        [JsonPropertyName("data")]
-        public List<Service> Data { get; set; }
+        [JsonPropertyName("endTime")]
+        public TimeSpan EndTime { get; set; }
 
-        [JsonPropertyName("message")]
-        public string Message { get; set; }
+        // …otros campos si los necesitas
     }
 }

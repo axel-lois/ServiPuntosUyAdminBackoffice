@@ -1,0 +1,50 @@
+@model ServiPuntosUyAdmin.Models.PromotionCreateViewModel
+@{
+  Layout = "_Layout";
+}
+
+<h2>Crear Nueva Oferta</h2>
+
+@using (Html.BeginForm()) {
+  @Html.AntiForgeryToken()
+
+  @* Muestra errores genéricos *@
+  @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+  @Html.HiddenFor(m => m.TenantId)
+  @Html.HiddenFor(m => m.BranchId)
+
+  <div class="form-group">
+    @Html.LabelFor(m => m.Description)
+    @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 3 })
+    @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+  </div>
+
+  <div class="form-group">
+    @Html.LabelFor(m => m.Price)
+    @Html.TextBoxFor(m => m.Price, new { @class = "form-control", type = "number", step = "0.01" })
+    @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger" })
+  </div>
+
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      @Html.LabelFor(m => m.StartDate)
+      @Html.TextBoxFor(m => m.StartDate, "{0:yyyy-MM-ddTHH:mm}", 
+           new { @class = "form-control", type = "datetime-local" })
+      @Html.ValidationMessageFor(m => m.StartDate, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group col-md-6">
+      @Html.LabelFor(m => m.EndDate)
+      @Html.TextBoxFor(m => m.EndDate, "{0:yyyy-MM-ddTHH:mm}", 
+           new { @class = "form-control", type = "datetime-local" })
+      @Html.ValidationMessageFor(m => m.EndDate, "", new { @class = "text-danger" })
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Crear Oferta</button>
+  <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+}
+
+@section Scripts {
+  @await Html.PartialAsync("_ValidationScriptsPartial")
+}

@@ -1,35 +1,68 @@
-@model ServiPuntosUyAdmin.Models.Service
+@model ServiPuntosUyAdmin.Models.ServiceCreateViewModel
 @{
   Layout = "_Layout";
+  ViewData["Title"] = "Nuevo Servicio";
 }
-<h2>Nuevo Servicio</h2>
-@using(Html.BeginForm()){
-  @Html.AntiForgeryToken()
-  @Html.HiddenFor(m=>m.BranchId)
-  <div class="form-group">
-    <label>Nombre</label>
-    @Html.TextBoxFor(m=>m.Name,new{ @class="form-control", required="required"})
+
+<h2>@ViewData["Title"]</h2>
+
+@if (TempData["Error"] != null)
+{
+  <div id="flashError" class="alert alert-danger">
+    @TempData["Error"]
   </div>
-  <div class="form-group">
-    <label>Descripción</label>
-    @Html.TextAreaFor(m=>m.Description,new{ @class="form-control", rows=3})
+}
+@if (TempData["Success"] != null)
+{
+  <div id="flashSuccess" class="alert alert-success">
+    @TempData["Success"]
   </div>
-  <div class="form-group">
-    <label>Precio</label>
-    @Html.TextBoxFor(m=>m.Price,new{ @class="form-control", type="number", step="0.01", required="required"})
-  </div>
-  <div class="form-group form-check">
-    @Html.CheckBoxFor(m=>m.AgeRestricted,new{ @class="form-check-input"})
-    <label class="form-check-label">Restringido por edad</label>
-  </div>
-  <div class="form-group">
-    <label>Inicio</label>
-    @Html.TextBoxFor(m=>m.StartTime,new{ @class="form-control", type="time", required="required"})
-  </div>
-  <div class="form-group">
-    <label>Fin</label>
-    @Html.TextBoxFor(m=>m.EndTime,new{ @class="form-control", type="time", required="required"})
-  </div>
-  <button type="submit" class="btn btn-primary">Guardar</button>
-  <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+}
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.BranchId)
+
+    <div class="form-group">
+        <label>Nombre</label>
+        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", required = "required" })
+        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        <label>Descripción</label>
+        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 3 })
+    </div>
+    <div class="form-group">
+        <label>Precio</label>
+        @Html.TextBoxFor(m => m.Price, new { @class = "form-control", type = "number", step = "0.01", required = "required" })
+        @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group form-check">
+        @Html.CheckBoxFor(m => m.AgeRestricted, new { @class = "form-check-input" })
+        <label class="form-check-label">Restringido por edad</label>
+    </div>
+    <div class="form-group">
+        <label>Horario Inicio</label>
+        @Html.TextBoxFor(m => m.StartTime, new { @class = "form-control", type = "time", required = "required" })
+        @Html.ValidationMessageFor(m => m.StartTime, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group">
+        <label>Horario Fin</label>
+        @Html.TextBoxFor(m => m.EndTime, new { @class = "form-control", type = "time", required = "required" })
+        @Html.ValidationMessageFor(m => m.EndTime, "", new { @class = "text-danger" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+}
+
+@section Scripts {
+  <script>
+    setTimeout(()=>{
+      const e = document.getElementById('flashError');
+      const s = document.getElementById('flashSuccess');
+      if(e) e.remove();
+      if(s) s.remove();
+    }, 3000);
+  </script>
 }

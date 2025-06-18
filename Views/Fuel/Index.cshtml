@@ -1,0 +1,54 @@
+@model IEnumerable<ServiPuntosUyAdmin.Models.FuelPriceViewModel>
+@{
+  Layout = "_Layout";
+
+  // Mapa de código → nombre
+    var fuelNames = new Dictionary<int, string> {
+        { 0, "Super" },
+        { 1, "Gasoil" },
+        { 2, "Premium" }
+    };
+}
+
+<h2>Combustibles</h2>
+@if (TempData["Success"] != null)
+{
+    <div id="flashSuccess" class="alert alert-success">
+        @TempData["Success"]
+    </div>
+    <script>
+        setTimeout(() => {
+            const f = document.getElementById('flashSuccess');
+            if (f) f.remove();
+        }, 3000);
+    </script>
+}
+
+<table class="table mt-3">
+  <thead>
+    <tr>
+      <th>Tipo</th>
+      <th>Nombre</th>
+      <th>Precio</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  @foreach (var f in Model)
+    {
+        <tr>
+            <td>@f.FuelType</td>
+            <td>@(fuelNames.ContainsKey(f.FuelType) ? fuelNames[f.FuelType] : "Desconocido")</td>
+            <td>@f.Price.ToString("C")</td>
+            <td>
+                <a asp-action="Edit"
+                   asp-controller="Fuel"
+                   asp-route-id="@f.FuelType"
+                   class="btn btn-sm btn-primary">
+                    Editar
+                </a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

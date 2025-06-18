@@ -1,3 +1,4 @@
+using SystemJson = System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using ServiPuntosUyAdmin.Models;
@@ -7,39 +8,52 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using JsonNet = Newtonsoft.Json;
-using SystemJson = System.Text.Json;
+using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using System.Net.Http.Headers;
+
 
 namespace ServiPuntosUyAdmin.Controllers
 {
     public class ServiceController : Controller
     {
+        private readonly ILogger<ServiceController> _logger;
         private readonly string apiBase = "http://localhost:5162/api/Service";
+
+        public ServiceController(ILogger<ServiceController> logger)
+        {
+            _logger = logger;
+        }
 
         // 1) Listado de servicios de esta sucursal
         public async Task<IActionResult> Index()
         {
-            // Solo branch --> tomar branch_id de sesión
-            if (!int.TryParse(HttpContext.Session.GetString("branch_id"), out int branchId))
+            // Si no hay branch_id en sesión, lo mandamos al login
+            if (!int.TryParse(HttpContext.Session.GetString("branch_id"), out _))
                 return RedirectToAction("Login", "Account");
 
-            List<Service> services = new();
+            // Preparamos el cliente HTTP con el Bearer token
             using var client = new HttpClient();
-            // header auth
             var token = HttpContext.Session.GetString("jwt_token");
             if (!string.IsNullOrEmpty(token))
-                client.DefaultRequestHeaders.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                client.DefaultRequestHeaders.Authorization = 
+                    new AuthenticationHeaderValue("Bearer", token);
 
-            var resp = await client.GetAsync($"{apiBase}/branch/{branchId}");
-            if (resp.IsSuccessStatusCode)
+            // LLAMADA sin parámetro: /api/Service/branch
+            var resp = await client.GetAsync($"{apiBase}/branch");
+            if (!resp.IsSuccessStatusCode)
             {
-                var json = await resp.Content.ReadAsStringAsync();
-                var list = SystemJson.JsonSerializer.Deserialize<ServiceListResponse>(
-                    json,
-                    new SystemJson.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-                );
-                services = list?.Data ?? new();
+                TempData["Error"] = "No se pudieron obtener los servicios";
+                return View(new List<Service>());
             }
+
+            var json = await resp.Content.ReadAsStringAsync();
+            var wrapper = JsonSerializer.Deserialize<ServiceListResponse>(
+                json,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            );
+
+            var services = wrapper?.Data ?? new List<Service>();
             return View(services);
         }
 
@@ -48,40 +62,37 @@ namespace ServiPuntosUyAdmin.Controllers
         public IActionResult Create()
         {
             if (!int.TryParse(HttpContext.Session.GetString("branch_id"), out int branchId))
-                return RedirectToAction("Index");
-            // preponemos branchId
-            var svc = new Service { BranchId = branchId };
-            return View(svc);
+                return RedirectToAction("Login", "Account");
+
+            var vm = new ServiceCreateViewModel { BranchId = branchId };
+            return View(vm);
         }
 
         // 3) POST Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Service model)
+        public async Task<IActionResult> Create(ServiceCreateViewModel vm)
         {
             if (!ModelState.IsValid)
-                return View(model);
+                return View(vm);
 
             using var client = new HttpClient();
             var token = HttpContext.Session.GetString("jwt_token");
             if (!string.IsNullOrEmpty(token))
                 client.DefaultRequestHeaders.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                    new AuthenticationHeaderValue("Bearer", token);
 
-            var payload = new {
-                branchId     = model.BranchId,
-                name         = model.Name,
-                description  = model.Description,
-                price        = model.Price,
-                ageRestricted= model.AgeRestricted,
-                startTime    = model.StartTime,
-                endTime      = model.EndTime
+            var payload = new
+            {
+                name          = vm.Name,
+                description   = vm.Description,
+                price         = vm.Price,
+                ageRestricted = vm.AgeRestricted,
+                startTime     = vm.StartTime,
+                endTime       = vm.EndTime
             };
-            var content = new StringContent(
-                JsonNet.JsonConvert.SerializeObject(payload),
-                Encoding.UTF8,
-                "application/json"
-            );
+            var json    = JsonNet.JsonConvert.SerializeObject(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var resp = await client.PostAsync($"{apiBase}/create", content);
             if (resp.IsSuccessStatusCode)
@@ -89,14 +100,18 @@ namespace ServiPuntosUyAdmin.Controllers
                 TempData["Success"] = "Servicio creado correctamente";
                 return RedirectToAction(nameof(Index));
             }
-            TempData["Error"] = await resp.Content.ReadAsStringAsync();
-            return View(model);
+
+            var error = await resp.Content.ReadAsStringAsync();
+            ModelState.AddModelError("", $"Error al crear el servicio: {error}");
+            return View(vm);
         }
 
-        // 4) GET Edit/{id}
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
+            if (!int.TryParse(HttpContext.Session.GetString("branch_id"), out int branchId))
+                return RedirectToAction("Index");
+
             using var client = new HttpClient();
             var token = HttpContext.Session.GetString("jwt_token");
             if (!string.IsNullOrEmpty(token))
@@ -110,21 +125,41 @@ namespace ServiPuntosUyAdmin.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var json = await resp.Content.ReadAsStringAsync();
-            var svc = SystemJson.JsonSerializer.Deserialize<Service>(
+            var json    = await resp.Content.ReadAsStringAsync();
+            var wrapper = System.Text.Json.JsonSerializer.Deserialize<ServiceResponse>(
                 json,
-                new SystemJson.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
             );
-            return View(svc);
+            var svc = wrapper?.Data;
+            if (svc == null) return RedirectToAction(nameof(Index));
+
+            // Map a ViewModel
+            var first = svc.Availabilities?.FirstOrDefault();
+            var vm = new ServiceEditViewModel {
+                Id            = svc.Id,
+                BranchId      = branchId,
+                Name          = svc.Name,
+                Description   = svc.Description,
+                Price         = svc.Price,
+                AgeRestricted = svc.AgeRestricted,
+                StartTime     = first?.StartTime.ToString(@"hh\:mm") ?? "",
+                EndTime       = first?.EndTime.ToString(@"hh\:mm") ?? ""
+            };
+
+            return View(vm);
         }
+
 
         // 5) POST Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Service model)
+        public async Task<IActionResult> Edit(ServiceEditViewModel vm)
         {
             if (!ModelState.IsValid)
-                return View(model);
+            {
+                // Volvemos a la vista con validaciones desplegadas
+                return View(vm);
+            }
 
             using var client = new HttpClient();
             var token = HttpContext.Session.GetString("jwt_token");
@@ -133,12 +168,12 @@ namespace ServiPuntosUyAdmin.Controllers
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
             var payload = new {
-                name         = model.Name,
-                description  = model.Description,
-                price        = model.Price,
-                ageRestricted= model.AgeRestricted,
-                startTime    = model.StartTime,
-                endTime      = model.EndTime
+                name         = vm.Name,
+                description  = vm.Description,
+                price        = vm.Price,
+                ageRestricted= vm.AgeRestricted,
+                startTime    = vm.StartTime,
+                endTime      = vm.EndTime
             };
             var content = new StringContent(
                 JsonNet.JsonConvert.SerializeObject(payload),
@@ -146,36 +181,15 @@ namespace ServiPuntosUyAdmin.Controllers
                 "application/json"
             );
 
-            var resp = await client.PutAsync($"{apiBase}/{model.Id}", content);
+            var resp = await client.PutAsync($"{apiBase}/{vm.Id}", content);
             if (resp.IsSuccessStatusCode)
             {
                 TempData["Success"] = "Servicio actualizado correctamente";
                 return RedirectToAction(nameof(Index));
             }
+
             TempData["Error"] = await resp.Content.ReadAsStringAsync();
-            return View(model);
-        }
-
-        // 6) GET Confirm Delete
-        [HttpGet]
-        public async Task<IActionResult> Delete(int id)
-        {
-            // Reutiliza GET /api/Service/{id}
-            using var client = new HttpClient();
-            var token = HttpContext.Session.GetString("jwt_token");
-            if (!string.IsNullOrEmpty(token))
-                client.DefaultRequestHeaders.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-            var resp = await client.GetAsync($"{apiBase}/{id}");
-            if (!resp.IsSuccessStatusCode) return RedirectToAction(nameof(Index));
-
-            var json = await resp.Content.ReadAsStringAsync();
-            var svc = SystemJson.JsonSerializer.Deserialize<Service>(
-                json,
-                new SystemJson.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-            );
-            return View(svc);
+            return View(vm);
         }
 
         // 7) POST DeleteConfirmed
