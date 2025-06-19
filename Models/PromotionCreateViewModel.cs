@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ServiPuntosUyAdmin.Models
 {
@@ -34,7 +35,11 @@ namespace ServiPuntosUyAdmin.Models
         [Display(Name = "Sucursales")]
         public List<int> Branches { get; set; } = new();
 
+        [Required(ErrorMessage = "Debe seleccionar al menos un producto")]
         [Display(Name = "Productos")]
         public List<int> Products { get; set; } = new();
+
+         // Lista de productos para el dropdown
+        public List<SelectListItem> AvailableProducts { get; set; } = new();
     }
 }

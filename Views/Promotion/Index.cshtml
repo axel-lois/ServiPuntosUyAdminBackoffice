@@ -18,6 +18,7 @@
 <table class="table mt-3">
   <thead>
     <tr>
+      <th>Producto</th>
       <th>Descripción</th>
       <th>Precio</th>
       <th>Inicio</th>
@@ -28,6 +29,16 @@
     @foreach(var o in Model ?? Enumerable.Empty<ServiPuntosUyAdmin.Models.Promotion>())
     {
       <tr>
+        <td>
+            @if (o.Products != null && o.Products.Any())
+            {
+                @string.Join(", ", o.Products)
+            }
+            else
+            {
+                <em>—</em>
+            }
+        </td>
         <td>@o.Description</td>
         <td>@o.Price.ToString("C")</td>
         <td>@o.StartDate</td>

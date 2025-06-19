@@ -2,14 +2,30 @@
 @using System.Linq
 @{
   Layout = "_Layout";
-  ViewData["Title"] = "Ofertas de mi sucursal";
 }
 
-<h2>@ViewData["Title"]</h2>
+<h2>Ofertas de mi sucursal</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success" id="successMsg">@TempData["Success"]</div>
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('successMsg');
+            if(el) el.style.display = 'none';
+        }, 3000);
+    </script>
+}
 
 @if (TempData["Error"] != null)
 {
-  <div class="alert alert-danger">@TempData["Error"]</div>
+    <div class="alert alert-danger" id="errorMsg">@TempData["Error"]</div>
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('errorMsg');
+            if(el) el.style.display = 'none';
+        }, 4000); // el error lo dejamos 4 segundos por ejemplo
+    </script>
 }
 
 <a class="btn btn-success mb-3"
@@ -33,8 +49,8 @@
       <tr>
         <td>@o.Description</td>
         <td>@o.Price.ToString("C")</td>
-        <td>@o.StartDate:g</td>
-        <td>@o.EndDate:g</td>
+        <td>@o.StartDate</td>
+        <td>@o.EndDate</td>
       </tr>
     }
   </tbody>

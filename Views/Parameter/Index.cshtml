@@ -3,13 +3,27 @@
     ViewData["Title"] = "Parámetros Generales";
 }
 
-@if (TempData["Success"] != null) {
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
-@if (TempData["Error"] != null) {
-    <div class="alert alert-danger">@TempData["Error"]</div>
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success" id="successMsg">@TempData["Success"]</div>
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('successMsg');
+            if(el) el.style.display = 'none';
+        }, 3000);
+    </script>
 }
 
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" id="errorMsg">@TempData["Error"]</div>
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('errorMsg');
+            if(el) el.style.display = 'none';
+        }, 4000); // el error lo dejamos 4 segundos por ejemplo
+    </script>
+}
 <a class="btn btn-success" href="/Parameter/Create"><i class="fa fa-plus"></i> Nuevo Parámetro</a>
 <table class="table table-striped">
     <thead>

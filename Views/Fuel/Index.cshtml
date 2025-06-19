@@ -13,14 +13,23 @@
 <h2>Combustibles</h2>
 @if (TempData["Success"] != null)
 {
-    <div id="flashSuccess" class="alert alert-success">
-        @TempData["Success"]
-    </div>
+    <div class="alert alert-success" id="successMsg">@TempData["Success"]</div>
     <script>
         setTimeout(() => {
-            const f = document.getElementById('flashSuccess');
-            if (f) f.remove();
+            const el = document.getElementById('successMsg');
+            if(el) el.style.display = 'none';
         }, 3000);
+    </script>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" id="errorMsg">@TempData["Error"]</div>
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('errorMsg');
+            if(el) el.style.display = 'none';
+        }, 4000); // el error lo dejamos 4 segundos por ejemplo
     </script>
 }
 

@@ -5,19 +5,26 @@
 
 <h2>Personalización de Cadena</h2>
 
-@if (ViewBag.Success != null)
+@if (TempData["Success"] != null)
 {
-    <div class="alert alert-success" id="successMsg">@ViewBag.Success</div>
+    <div class="alert alert-success" id="successMsg">@TempData["Success"]</div>
     <script>
-        // Tras 2 segundos redirigimos al dashboard
         setTimeout(() => {
-            window.location = '@Url.Action("Index", "Home")';
-        }, 2000);
+            const el = document.getElementById('successMsg');
+            if(el) el.style.display = 'none';
+        }, 3000);
     </script>
 }
-@if (ViewBag.Error != null)
+
+@if (TempData["Error"] != null)
 {
-    <div class="alert alert-danger">@ViewBag.Error</div>
+    <div class="alert alert-danger" id="errorMsg">@TempData["Error"]</div>
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('errorMsg');
+            if(el) el.style.display = 'none';
+        }, 4000); // el error lo dejamos 4 segundos por ejemplo
+    </script>
 }
 
 <form asp-action="Personalization" asp-route-id="@tenantId" method="post">

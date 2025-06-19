@@ -6,21 +6,23 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using ServiPuntosUyAdmin.Models;
 using System.Net.Http.Headers;
-using SystemTextJson = System.Text.Json;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;                    // para JsonConvert.SerializeObject
+using SystemTextJson = System.Text.Json;  // alias para System.Text.Json
 
 namespace ServiPuntosUyAdmin.Controllers
 {
     public class PromotionController : Controller
     {
         private readonly ILogger<PromotionController> _logger;
-        private const string ApiBase         = "http://localhost:5162/api/Promotion";
-        private const string ApiCreateTenant = ApiBase + "/Create";
-        private const string ApiListTenant   = ApiBase + "/tenant"; // según tu último comentario
-        private const string ApiListBranch     = ApiBase + "/Branch";        // Modificar cuando efectivamente tenga la API
-        private const string ApiCreateBranch   = ApiBase + "/Branch/Create"; // POST para crear promo en la branch
+
+        private const string ApiBase           = "http://localhost:5162/api/Promotion";
+        private const string ApiCreateTenant   = ApiBase + "/Create";
+        private const string ApiListTenant     = ApiBase + "/tenant";
+        private const string ApiListBranch     = ApiBase + "/Branch";        // GET promos de esta sucursal
+        private const string ApiCreateBranch   = ApiBase + "/Branch/Create"; // POST crea promo para branch
 
         public PromotionController(ILogger<PromotionController> logger)
         {
@@ -33,7 +35,6 @@ namespace ServiPuntosUyAdmin.Controllers
         // ----------------------------------------
         public async Task<IActionResult> Branch()
         {
-            // 1) Validar que tengamos branch_id en sesión
             if (!int.TryParse(HttpContext.Session.GetString("branch_id"), out int branchId))
                 return RedirectToAction("Login", "Account");
 
@@ -41,26 +42,22 @@ namespace ServiPuntosUyAdmin.Controllers
             using var client = new HttpClient();
             var token = HttpContext.Session.GetString("jwt_token");
             if (!string.IsNullOrEmpty(token))
-                client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", token);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            // 2) Llamada al endpoint que devuelve las promos de esta branch
-            //    Asumimos que GET /api/Promotion/Branch lee el branchId del token,
-            //    si tu API en cambio requiere /Branch/{branchId} ajustá aquí.
             var resp = await client.GetAsync(ApiListBranch);
             if (!resp.IsSuccessStatusCode)
             {
                 TempData["Error"] = "No se pudieron obtener las promociones de la sucursal";
-                return View(promos);
+                return View("Branch", promos);
             }
 
             var json = await resp.Content.ReadAsStringAsync();
             var wrapper = SystemTextJson.JsonSerializer.Deserialize<PromotionListResponse>(
                 json,
-                new SystemTextJson.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
             );
             promos = wrapper?.Data ?? new();
-            return View(promos);
+            return View("Branch", promos);
         }
 
         // ----------------------------------------
@@ -69,7 +66,6 @@ namespace ServiPuntosUyAdmin.Controllers
         [HttpGet]
         public IActionResult CreateBranch()
         {
-            // Validamos branch_id y tenant_id en sesión
             if (!int.TryParse(HttpContext.Session.GetString("branch_id"), out int branchId) ||
                 !int.TryParse(HttpContext.Session.GetString("tenant_id"), out int tenantId))
             {
@@ -80,12 +76,13 @@ namespace ServiPuntosUyAdmin.Controllers
             {
                 TenantId    = tenantId,
                 BranchId    = branchId,
-                Description = "",
+                Description = string.Empty,
                 StartDate   = DateTime.Now,
                 EndDate     = DateTime.Now.AddDays(7),
                 Price       = 0m,
-                Branches    = new List<int> { branchId }, // pre-seleccionamos la branch actual
-                Products    = new List<int>()
+                Branches    = new List<int> { branchId },
+                Products    = new List<int>(),
+                AvailableProducts = new List<SelectListItem>()
             };
             return View("CreateBranch", vm);
         }
@@ -99,16 +96,6 @@ namespace ServiPuntosUyAdmin.Controllers
             if (!ModelState.IsValid)
                 return View("CreateBranch", vm);
 
-            // Preparamos el payload EXACTO que tu API espera:
-            // {
-            //   "tenantId": -1,
-            //   "branchId": 1,         <- opcional si lo infiere del token
-            //   "description": "...",
-            //   "startDate": "2025-06-17T00:00:00Z",
-            //   "endDate":   "2025-06-19T00:00:00Z",
-            //   "product": [1],
-            //   "price": 100
-            // }
             var payload = new
             {
                 tenantId    = vm.TenantId,
@@ -116,8 +103,8 @@ namespace ServiPuntosUyAdmin.Controllers
                 description = vm.Description,
                 startDate   = vm.StartDate.ToUniversalTime().ToString("o"),
                 endDate     = vm.EndDate.ToUniversalTime().ToString("o"),
-                product     = vm.Products,              // lista de IDs de productos
-                price       = Convert.ToInt32(vm.Price) // tu API pide int
+                product     = vm.Products,
+                price       = Convert.ToInt32(vm.Price)
             };
 
             var json = JsonConvert.SerializeObject(payload);
@@ -126,8 +113,7 @@ namespace ServiPuntosUyAdmin.Controllers
             using var client = new HttpClient();
             var token = HttpContext.Session.GetString("jwt_token");
             if (!string.IsNullOrEmpty(token))
-                client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", token);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var resp = await client.PostAsync(ApiCreateBranch, content);
@@ -140,7 +126,7 @@ namespace ServiPuntosUyAdmin.Controllers
             else
             {
                 var err = await resp.Content.ReadAsStringAsync();
-                ModelState.AddModelError("", "Error al crear la promoción de sucursal: " + err);
+                ModelState.AddModelError(string.Empty, "Error al crear la promoción de sucursal: " + err);
                 return View("CreateBranch", vm);
             }
         }
@@ -157,11 +143,9 @@ namespace ServiPuntosUyAdmin.Controllers
             using var client = new HttpClient();
             var token = HttpContext.Session.GetString("jwt_token");
             if (!string.IsNullOrEmpty(token))
-                client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", token);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            // Llamo al endpoint que devuelve todas las promos para ese tenant
-            var resp = await client.GetAsync($"{ApiListTenant}");
+            var resp = await client.GetAsync(ApiListTenant);
             if (!resp.IsSuccessStatusCode)
             {
                 TempData["Error"] = "No se pudieron obtener las promociones";
@@ -171,7 +155,7 @@ namespace ServiPuntosUyAdmin.Controllers
             var json = await resp.Content.ReadAsStringAsync();
             var wrapper = SystemTextJson.JsonSerializer.Deserialize<PromotionListResponse>(
                 json,
-                new SystemTextJson.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
             );
             promos = wrapper?.Data ?? new();
             return View(promos);
@@ -181,7 +165,7 @@ namespace ServiPuntosUyAdmin.Controllers
         // GET /Promotion/Create   (Admin Tenant)
         // -------------------------------------------------------------
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             if (!int.TryParse(HttpContext.Session.GetString("tenant_id"), out int tenantId))
                 return RedirectToAction(nameof(Index));
@@ -194,8 +178,38 @@ namespace ServiPuntosUyAdmin.Controllers
                 EndDate     = DateTime.Now.AddDays(7),
                 Price       = 0m,
                 Branches    = new List<int>(),
-                Products    = new List<int>()
+                Products    = new List<int>(),
+                AvailableProducts = new List<SelectListItem>()
             };
+
+            // Cargo productos para el multiselect
+            using var client = new HttpClient();
+            var token = HttpContext.Session.GetString("jwt_token");
+            if (!string.IsNullOrEmpty(token))
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var resp = await client.GetAsync("http://localhost:5162/api/Product");
+            if (resp.IsSuccessStatusCode)
+            {
+                var prodJson = await resp.Content.ReadAsStringAsync();
+                var listResp = SystemTextJson.JsonSerializer.Deserialize<ProductListResponse>(
+                    prodJson,
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                );
+                foreach (var p in listResp.Data ?? new List<Product>())
+                {
+                    vm.AvailableProducts.Add(new SelectListItem
+                    {
+                        Value = p.Id.ToString(),
+                        Text  = p.Name
+                    });
+                }
+            }
+            else
+            {
+                TempData["Error"] = "No se pudieron cargar los productos";
+            }
+
             return View(vm);
         }
 
@@ -208,25 +222,14 @@ namespace ServiPuntosUyAdmin.Controllers
             if (!ModelState.IsValid)
                 return View(vm);
 
-            // ¡Ojo! tu API espera:
-            // {
-            //   "tenantId": -1,
-            //   "description": "...",
-            //   "startDate": "2025-06-17T00:00:00Z",
-            //   "endDate":   "2025-06-19T00:00:00Z",
-            //   "branch":    [1],
-            //   "product":   [1],
-            //   "price":     100
-            // }
-
             var payload = new
             {
                 tenantId    = vm.TenantId,
                 description = vm.Description,
                 startDate   = vm.StartDate.ToUniversalTime().ToString("o"),
                 endDate     = vm.EndDate.ToUniversalTime().ToString("o"),
-                branch      = vm.Branches,   // debe venir del form (select multiple)
-                product     = vm.Products,   // idem
+                branch      = vm.Branches,
+                product     = vm.Products,
                 price       = Convert.ToInt32(vm.Price)
             };
 
@@ -236,8 +239,7 @@ namespace ServiPuntosUyAdmin.Controllers
             using var client = new HttpClient();
             var token = HttpContext.Session.GetString("jwt_token");
             if (!string.IsNullOrEmpty(token))
-                client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", token);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var resp = await client.PostAsync(ApiCreateTenant, content);
