@@ -1,4 +1,6 @@
+// Models/PromotionCreateViewModel.cs
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace ServiPuntosUyAdmin.Models
@@ -11,7 +13,7 @@ namespace ServiPuntosUyAdmin.Models
 
         [Required]
         [Display(Name = "Descripción")]
-        public string Description { get; set; }
+        public string Description { get; set; } = "";
 
         [Required]
         [Display(Name = "Fecha inicio")]
@@ -27,5 +29,12 @@ namespace ServiPuntosUyAdmin.Models
         [Range(0, double.MaxValue)]
         [Display(Name = "Precio")]
         public decimal Price { get; set; }
+
+        // Aquí las colecciones que faltaban:
+        [Display(Name = "Sucursales")]
+        public List<int> Branches { get; set; } = new();
+
+        [Display(Name = "Productos")]
+        public List<int> Products { get; set; } = new();
     }
 }

@@ -14,16 +14,16 @@
     </thead>
     <tbody>
         <tr class="clickable-row">
-            <td >Tenant</td>
-            <td class="text-center">@(stats?.Promotions?.Total ?? 0)</td>
-        </tr>
-        <tr class="clickable-row">
             <td >Estaciones</td>
             <td class="text-center">@(stats?.Promotions?.BranchPromotions ?? 0)</td>
         </tr>
         <tr class="clickable-row">
-            <td >Ofertas totales</td>
+            <td >Tenant</td>
             <td class="text-center">@(stats?.Promotions?.TenantPromotions ?? 0)</td>
+        </tr>
+        <tr class="clickable-row">
+            <td >Total</td>
+            <td class="text-center">@(stats?.Promotions?.Total ?? 0)</td>
         </tr>
     </tbody>
 </table>

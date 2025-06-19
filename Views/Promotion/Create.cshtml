@@ -1,18 +1,17 @@
 @model ServiPuntosUyAdmin.Models.PromotionCreateViewModel
 @{
-  Layout = "_Layout";
+    Layout = "_Layout";
+    ViewData["Title"] = "Crear Nueva Oferta";
 }
 
-<h2>Crear Nueva Oferta</h2>
+<h2>@ViewData["Title"]</h2>
 
 @using (Html.BeginForm()) {
   @Html.AntiForgeryToken()
-
-  @* Muestra errores genéricos *@
   @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
 
-  @Html.HiddenFor(m => m.TenantId)
   @Html.HiddenFor(m => m.BranchId)
+  @Html.HiddenFor(m => m.TenantId)
 
   <div class="form-group">
     @Html.LabelFor(m => m.Description)
@@ -29,16 +28,21 @@
   <div class="form-row">
     <div class="form-group col-md-6">
       @Html.LabelFor(m => m.StartDate)
-      @Html.TextBoxFor(m => m.StartDate, "{0:yyyy-MM-ddTHH:mm}", 
+      @Html.TextBoxFor(m => m.StartDate, "{0:yyyy-MM-ddTHH:mm}",
            new { @class = "form-control", type = "datetime-local" })
       @Html.ValidationMessageFor(m => m.StartDate, "", new { @class = "text-danger" })
     </div>
     <div class="form-group col-md-6">
       @Html.LabelFor(m => m.EndDate)
-      @Html.TextBoxFor(m => m.EndDate, "{0:yyyy-MM-ddTHH:mm}", 
+      @Html.TextBoxFor(m => m.EndDate, "{0:yyyy-MM-ddTHH:mm}",
            new { @class = "form-control", type = "datetime-local" })
       @Html.ValidationMessageFor(m => m.EndDate, "", new { @class = "text-danger" })
     </div>
+  </div>
+
+  <div class="form-group">
+    @Html.LabelFor(m => m.Products)
+    @* aquí podrías listar checkboxes o un multiselect con tus productos *@
   </div>
 
   <button type="submit" class="btn btn-primary">Crear Oferta</button>
