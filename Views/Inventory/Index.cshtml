@@ -1,0 +1,35 @@
+@model IEnumerable<ServiPuntosUyAdmin.Models.BranchProduct>
+@{
+    Layout = "_Layout";
+}
+
+<h2>Inventario Local</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th>ProductId</th>
+      <th>Nombre</th>
+      <th>Stock</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  @foreach(var item in Model)
+  {
+    <tr>
+      <td>@item.ProductId</td>
+      <td>@item.Name</td>
+      <td>@item.Stock</td>
+      <td>
+        <a class="btn btn-sm btn-primary"
+           asp-action="Edit"
+           asp-route-productId="@item.ProductId"
+           asp-route-productName="@item.Name"
+           asp-route-quantity="@item.Stock">
+          Editar
+        </a>
+      </td>
+    </tr>
+  }
+  </tbody>
+</table>
