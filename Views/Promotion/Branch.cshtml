@@ -1,0 +1,41 @@
+@model IEnumerable<ServiPuntosUyAdmin.Models.Promotion>
+@using System.Linq
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "Ofertas de mi sucursal";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (TempData["Error"] != null)
+{
+  <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<a class="btn btn-success mb-3"
+   asp-controller="Promotion"
+   asp-action="CreateBranch">
+  <i class="fa fa-plus"></i> Nueva Oferta
+</a>
+
+<table class="table mt-3">
+  <thead>
+    <tr>
+      <th>Descripción</th>
+      <th>Precio</th>
+      <th>Inicio</th>
+      <th>Fin</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach(var o in Model ?? Enumerable.Empty<Promotion>())
+    {
+      <tr>
+        <td>@o.Description</td>
+        <td>@o.Price.ToString("C")</td>
+        <td>@o.StartDate:g</td>
+        <td>@o.EndDate:g</td>
+      </tr>
+    }
+  </tbody>
+</table>

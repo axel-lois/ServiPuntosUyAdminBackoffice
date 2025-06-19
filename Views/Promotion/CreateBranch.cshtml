@@ -1,0 +1,54 @@
+@model ServiPuntosUyAdmin.Models.PromotionCreateViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Crear Nueva Oferta";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@using (Html.BeginForm("CreateBranch","Promotion",FormMethod.Post)) {
+  @Html.AntiForgeryToken()
+  @Html.HiddenFor(m => m.BranchId)
+  @Html.HiddenFor(m => m.TenantId)
+
+  @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+  <div class="form-group">
+    @Html.LabelFor(m => m.Description)
+    @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 3 })
+    @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+  </div>
+
+  <div class="form-group">
+    @Html.LabelFor(m => m.Price)
+    @Html.TextBoxFor(m => m.Price, new { @class = "form-control", type = "number", step = "0.01" })
+    @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger" })
+  </div>
+
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      @Html.LabelFor(m => m.StartDate)
+      @Html.TextBoxFor(m => m.StartDate, "{0:yyyy-MM-ddTHH:mm}",
+           new { @class = "form-control", type = "datetime-local" })
+      @Html.ValidationMessageFor(m => m.StartDate, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group col-md-6">
+      @Html.LabelFor(m => m.EndDate)
+      @Html.TextBoxFor(m => m.EndDate, "{0:yyyy-MM-ddTHH:mm}",
+           new { @class = "form-control", type = "datetime-local" })
+      @Html.ValidationMessageFor(m => m.EndDate, "", new { @class = "text-danger" })
+    </div>
+  </div>
+
+  <div class="form-group">
+    @Html.LabelFor(m => m.Products)
+    @* aquí podrías listar checkboxes o un multiselect con tus productos *@
+  </div>
+
+  <button type="submit" class="btn btn-primary">Crear Oferta</button>
+  <a asp-action="Branch" class="btn btn-secondary">Cancelar</a>
+}
+
+@section Scripts {
+  @await Html.PartialAsync("_ValidationScriptsPartial")
+}
