@@ -64,26 +64,69 @@ namespace ServiPuntosUyAdmin.Controllers
         // GET /Promotion/Branch/Create
         // ----------------------------------------
         [HttpGet]
-        public IActionResult CreateBranch()
+        public async Task<IActionResult> CreateBranch()
         {
-            if (!int.TryParse(HttpContext.Session.GetString("branch_id"), out int branchId) ||
-                !int.TryParse(HttpContext.Session.GetString("tenant_id"), out int tenantId))
+            var userType = HttpContext.Session.GetString("user_type");
+            int? branchId = null;
+            int? tenantId = null;
+
+            if (userType == "admin_branch")
             {
-                return RedirectToAction(nameof(Branch));
+                if (!int.TryParse(HttpContext.Session.GetString("branch_id"), out int branchIdValue))
+                    return RedirectToAction("Login", "Account");
+                branchId = branchIdValue;
+            }
+            else if (userType == "admin_tenant")
+            {
+                if (!int.TryParse(HttpContext.Session.GetString("tenant_id"), out int tenantIdValue))
+                    return RedirectToAction("Login", "Account");
+                tenantId = tenantIdValue;
+            }
+            else
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Ahora llamás al endpoint correcto
+            List<BranchProduct> productos = new();
+            using (var client = new HttpClient())
+            {
+                var token = HttpContext.Session.GetString("jwt_token");
+                if (!string.IsNullOrEmpty(token))
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                HttpResponseMessage resp;
+                if (userType == "admin_branch")
+                {
+                    resp = await client.GetAsync("http://localhost:5162/api/Branch/products");
+                }
+                else // admin_tenant
+                {
+                    resp = await client.GetAsync("http://localhost:5162/api/product");
+                }
+
+                if (resp.IsSuccessStatusCode)
+                {
+                    var json = await resp.Content.ReadAsStringAsync();
+                    var wrapper = System.Text.Json.JsonSerializer.Deserialize<BranchProductListResponse>(
+                        json, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    productos = wrapper?.Data ?? new List<BranchProduct>();
+                }
             }
 
             var vm = new PromotionCreateViewModel
             {
-                TenantId    = tenantId,
-                BranchId    = branchId,
-                Description = string.Empty,
-                StartDate   = DateTime.Now,
-                EndDate     = DateTime.Now.AddDays(7),
-                Price       = 0m,
-                Branches    = new List<int> { branchId },
-                Products    = new List<int>(),
-                AvailableProducts = new List<SelectListItem>()
+                TenantId = tenantId ?? -1,
+                BranchId = branchId ?? -1,
+                Products = new List<int>(),
+                // llená tu lista de productos si la mostrás en un select/checkbox, etc.
+                AvailableProducts = productos.Select(p => new SelectListItem
+                {
+                    Value = p.ProductId.ToString(),
+                    Text = $"{p.Name} (Stock: {p.Stock})"
+                }).ToList()
             };
+
             return View("CreateBranch", vm);
         }
 

@@ -93,6 +93,17 @@ namespace ServiPuntosUyAdmin.Controllers
 
             session.SetString("AdminName", nameValue);
 
+            if (userTypeReal == 2 && tenantIdValue.HasValue)
+            {
+                // Admin Branch
+                return RedirectToAction("Index", "Product", new { id = tenantIdValue.Value });
+            }
+            if (userTypeReal == 3 && branchIdValue.HasValue)
+            {
+                // Admin Branch
+                return RedirectToAction("Hours", "Station", new { id = branchIdValue.Value });
+            }
+
             return RedirectToAction("Index", "Home");
         }
 

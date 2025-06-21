@@ -61,7 +61,12 @@
 
   <div class="form-group">
     @Html.LabelFor(m => m.Products)
-    @* aquí podrías listar checkboxes o un multiselect con tus productos *@
+    @Html.ListBoxFor(
+        m => m.Products,
+        Model.AvailableProducts,
+        new { @class="form-control", size=5 }
+    )
+    @Html.ValidationMessageFor(m => m.Products, "", new { @class="text-danger" })
   </div>
 
   <button type="submit" class="btn btn-primary">Crear Oferta</button>

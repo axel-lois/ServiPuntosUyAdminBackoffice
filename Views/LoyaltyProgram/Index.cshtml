@@ -1,0 +1,57 @@
+@model ServiPuntosUyAdmin.Models.LoyaltyProgramViewModel
+
+@{
+    Layout = "_Layout";
+}
+
+<h2>Programa de Fidelidad</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success" id="successMsg">@TempData["Success"]</div>
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('successMsg');
+            if(el) el.style.display = 'none';
+        }, 3000);
+    </script>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" id="errorMsg">@TempData["Error"]</div>
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('errorMsg');
+            if(el) el.style.display = 'none';
+        }, 4000); // el error lo dejamos 4 segundos por ejemplo
+    </script>
+}
+
+@if (string.IsNullOrEmpty(Model?.PointsName))
+{
+    <a asp-action="Create" class="btn btn-primary mb-3">Crear Programa</a>
+}
+else
+{
+    <a asp-action="Edit" class="btn btn-warning mb-3">Editar Programa</a>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre de Puntos</th>
+                <th>Valor de Puntos</th>
+                <th>Regla de Acumulación</th>
+                <th>Expira en (días)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Model.PointsName</td>
+                <td>@Model.PointsValue</td>
+                <td>@Model.AccumulationRule</td>
+                <td>@Model.ExpiricyPolicyDays</td>
+            </tr>
+        </tbody>
+    </table>
+}

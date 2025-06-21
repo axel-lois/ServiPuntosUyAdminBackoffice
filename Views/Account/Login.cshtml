@@ -42,7 +42,6 @@
             <option value="Branch">Admin Branch</option>
         </select>
 
-        <!-- TENANT: ahora un <select> poblado via fetch -->
         <select name="tenantName" id="tenantNameSelect" class="admin-auth-input" style="display:none;" required>
             <option value="">Seleccioná tu Tenant</option>
         </select>
@@ -63,14 +62,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const userTypeSelect    = document.getElementById('userTypeSelect');
     const tenantNameSelect  = document.getElementById('tenantNameSelect');
 
-    // Función que muestra/oculta el select de tenant y lo popula cuando es necesario
     function handleUserTypeChange() {
         const ut = userTypeSelect.value;
         if (ut === 'Tenant' || ut === 'Branch') {
             tenantNameSelect.style.display = '';
-            tenantNameSelect.required     = true;
+            tenantNameSelect.required      = true;
 
-            // Solo cargamos una vez (si aún no hay más de 1 opción)
+            // Cambia solo el texto del option[0]
+            tenantNameSelect.options[0].text = ut === 'Branch' ? 'Seleccioná sucursal' : 'Seleccioná tu Tenant';
+
+            // Solo cargar tenants una vez
             if (tenantNameSelect.options.length <= 1) {
                 fetch('http://localhost:5162/api/public/tenant', { mode: 'cors' })
                   .then(resp => {
@@ -78,10 +79,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     return resp.json();
                   })
                   .then(result => {
-                    // result tiene la forma { error, data: [ { id, name }, ... ], message }
                     (result.data || []).forEach(t => {
                       const opt = document.createElement('option');
-                      opt.value = t.name;  // tu login espera tenantName = string
+                      opt.value = t.name;
                       opt.text  = t.name;
                       tenantNameSelect.appendChild(opt);
                     });
@@ -91,14 +91,13 @@ document.addEventListener('DOMContentLoaded', function () {
                   });
             }
         } else {
-            // ocultar para Central
+            // Oculta para Central
             tenantNameSelect.style.display = 'none';
-            tenantNameSelect.required     = false;
+            tenantNameSelect.required      = false;
             tenantNameSelect.selectedIndex = 0;
         }
     }
 
-    // Al cambiar el tipo de usuario
     userTypeSelect.addEventListener('change', handleUserTypeChange);
     // Estado inicial
     handleUserTypeChange();
