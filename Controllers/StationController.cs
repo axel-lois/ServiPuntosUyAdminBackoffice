@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Net;
 
 // Aliases para evitar ambigüedad
 using JsonNet       = Newtonsoft.Json;
@@ -474,6 +475,10 @@ namespace ServiPuntosUyAdmin.Controllers
             var json = JsonNet.JsonConvert.SerializeObject(payload);
             using var content = new StringContent(json, Encoding.UTF8, "application/json");
             var resp = await client.PostAsync($"{apiBaseUrl}/hours", content);
+
+            // SI JWT expiró, redirige de una vez al login
+            if (resp.StatusCode == HttpStatusCode.Unauthorized)
+                return RedirectToAction("Login", "Account");
 
             if (!resp.IsSuccessStatusCode)
             {

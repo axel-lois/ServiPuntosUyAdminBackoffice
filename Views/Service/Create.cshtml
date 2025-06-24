@@ -29,6 +29,9 @@
 
 @using (Html.BeginForm()) {
     @Html.AntiForgeryToken()
+    
+    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
     @Html.HiddenFor(m => m.BranchId)
 
     <div class="form-group">

@@ -91,16 +91,40 @@ namespace ServiPuntosUyAdmin.Controllers
             if (!int.TryParse(HttpContext.Session.GetString("branch_id"), out int branchId))
                 return RedirectToAction("Login", "Account");
 
+            // Leemos el valor bruto que el usuario ingresó
+            var formPrice = Request.Form["Price"].ToString().Trim();
+
+            // Normalizamos tanto "," como "." a punto
+            // para luego parsear con InvariantCulture
+            var normalized = formPrice
+                .Replace(",", ".")
+                // elimina espacios, si hubiera
+                .Replace(" ", "");
+
+            if (!decimal.TryParse(
+                    normalized,
+                    NumberStyles.AllowDecimalPoint,
+                    CultureInfo.InvariantCulture,
+                    out decimal parsedPrice))
+            {
+                ModelState.AddModelError("Price", "Precio inválido. Usa formato 50.00 o 50,00");
+                return View(vm);
+            }
+
+            // Ahora armamos el contenido según lo espera tu API (puro número con punto)
+            var priceRaw = parsedPrice.ToString(CultureInfo.InvariantCulture);
+            var content  = new StringContent(priceRaw, Encoding.UTF8, "application/json");
+
             using var client = new HttpClient();
             var token = HttpContext.Session.GetString("jwt_token");
             if (!string.IsNullOrEmpty(token))
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            // Aquí enviamos SOLO el literal numérico, que es lo que espera tu API
-            var priceRaw = vm.Price.ToString(CultureInfo.InvariantCulture);
-            var content  = new StringContent(priceRaw, Encoding.UTF8, "application/json");
+            var resp = await client.PutAsync(
+                $"{apiBase}/{branchId}/price/{id}",
+                content
+            );
 
-            var resp = await client.PutAsync($"{apiBase}/{branchId}/price/{id}", content);
             if (resp.IsSuccessStatusCode)
             {
                 TempData["Success"] = "Precio actualizado correctamente";

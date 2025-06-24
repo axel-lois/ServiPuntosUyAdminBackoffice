@@ -100,10 +100,40 @@ namespace ServiPuntosUyAdmin.Controllers
                 TempData["Success"] = "Servicio creado correctamente";
                 return RedirectToAction(nameof(Index));
             }
+            else
+            {
+                // 1) leo el body completo
+                var jsonError = await resp.Content.ReadAsStringAsync();
 
+                // 2) intento parsear solo el campo 'message'
+                string friendly;
+                try
+                {
+                    // esta clase auxiliar la defines justo abajo
+                    var wrapper = System.Text.Json.JsonSerializer.Deserialize<ErrorWrapper>(
+                        jsonError,
+                        new System.Text.Json.JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        }
+                    );
+                    friendly = wrapper?.Message
+                            ?? "Error desconocido al crear el servicio.";
+                }
+                catch
+                {
+                    friendly = "Error al crear el servicio.";
+                }
+
+                // 3) lo meto en ModelState para que lo muestre ValidationSummary
+                ModelState.AddModelError(string.Empty, friendly);
+                return View(vm);
+            }
+        /*
             var error = await resp.Content.ReadAsStringAsync();
             ModelState.AddModelError("", $"Error al crear el servicio: {error}");
             return View(vm);
+            */
         }
 
         [HttpGet]
@@ -209,6 +239,14 @@ namespace ServiPuntosUyAdmin.Controllers
             else
                 TempData["Error"] = await resp.Content.ReadAsStringAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // clase auxiliar para deserializar tu error
+        private class ErrorWrapper
+        {
+            public bool Error     { get; set; }
+            public object Data    { get; set; }
+            public string Message { get; set; }
         }
     }
 }
