@@ -2,6 +2,7 @@
 @{
     Layout = "_Layout";
 }
+
 @if (TempData["Success"] != null)
 {
     <div class="alert alert-success" id="successMsg">@TempData["Success"]</div>
@@ -20,7 +21,7 @@
         setTimeout(() => {
             const el = document.getElementById('errorMsg');
             if(el) el.style.display = 'none';
-        }, 4000); // el error lo dejamos 4 segundos por ejemplo
+        }, 4000);
     </script>
 }
 
@@ -34,17 +35,17 @@
     </div>
     <div class="form-group">
         <label asp-for="PointsValue"></label>
-        <input asp-for="PointsValue" class="form-control" type="number"/>
+        <input asp-for="PointsValue" class="form-control" type="number" min="0" />
         <span asp-validation-for="PointsValue" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="AccumulationRule"></label>
-        <input asp-for="AccumulationRule" class="form-control" type="number"/>
+        <input asp-for="AccumulationRule" class="form-control" type="number" min="0" />
         <span asp-validation-for="AccumulationRule" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="ExpiricyPolicyDays"></label>
-        <input asp-for="ExpiricyPolicyDays" class="form-control" type="number"/>
+        <input asp-for="ExpiricyPolicyDays" class="form-control" type="number" min="0" />
         <span asp-validation-for="ExpiricyPolicyDays" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-success mt-2">

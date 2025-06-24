@@ -4,9 +4,26 @@
 }
 <h2>Ofertas</h2>
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success" id="successMsg">@TempData["Success"]</div>
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('successMsg');
+            if (el) el.style.display = 'none';
+        }, 3000);
+    </script>
+}
+
 @if (TempData["Error"] != null)
 {
-    <div class="alert alert-danger">@TempData["Error"]</div>
+    <div class="alert alert-danger" id="errorMsg">@TempData["Error"]</div>
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('errorMsg');
+            if (el) el.style.display = 'none';
+        }, 4000);
+    </script>
 }
 
 <a class="btn btn-success mb-3"

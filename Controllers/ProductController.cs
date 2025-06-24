@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 
 namespace ServiPuntosUyAdmin.Controllers
 {
@@ -67,29 +68,37 @@ namespace ServiPuntosUyAdmin.Controllers
             {
                 string token = HttpContext.Session.GetString("jwt_token");
                 if (!string.IsNullOrEmpty(token))
-                {
                     client.DefaultRequestHeaders.Authorization =
-                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                }
+                        new AuthenticationHeaderValue("Bearer", token);
 
+                // 1) Serializas el objeto product a JSON
                 var json = JsonSerializer.Serialize(product, new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 });
 
+                // 2) Creas el content aquí
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                // 3) Llamas al endpoint
                 var response = await client.PostAsync($"{_apiUrl}/Create", content);
 
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["Success"] = "Producto creado exitosamente.";
-                    return RedirectToAction("Index");
+                    // Explicitamente al Index de Product
+                    return RedirectToAction("Index", "Product");
                 }
-
-                TempData["Error"] = "Error al crear el producto.";
-                return View(product);
+                else
+                {
+                    TempData["Error"] = "Error al crear el producto.";
+                }
             }
+
+            // En caso de error, volvemos a la vista con el mismo modelo para que muestre validaciones
+            return View(product);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)

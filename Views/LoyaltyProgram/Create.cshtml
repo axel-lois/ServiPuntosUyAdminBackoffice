@@ -3,6 +3,28 @@
     Layout = "_Layout";
 }
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success" id="successMsg">@TempData["Success"]</div>
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('successMsg');
+            if(el) el.style.display = 'none';
+        }, 3000);
+    </script>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" id="errorMsg">@TempData["Error"]</div>
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('errorMsg');
+            if(el) el.style.display = 'none';
+        }, 4000);
+    </script>
+}
+
 <h2>Crear Programa de Fidelización</h2>
 
 <form asp-action="Create" method="post">
@@ -13,17 +35,17 @@
     </div>
     <div class="form-group">
         <label asp-for="PointsValue"></label>
-        <input asp-for="PointsValue" class="form-control" type="number"/>
+        <input asp-for="PointsValue" class="form-control" type="number" min="0" />
         <span asp-validation-for="PointsValue" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="AccumulationRule"></label>
-        <input asp-for="AccumulationRule" class="form-control" type="number"/>
+        <input asp-for="AccumulationRule" class="form-control" type="number" min="0" />
         <span asp-validation-for="AccumulationRule" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="ExpiricyPolicyDays"></label>
-        <input asp-for="ExpiricyPolicyDays" class="form-control" type="number"/>
+        <input asp-for="ExpiricyPolicyDays" class="form-control" type="number" min="0" />
         <span asp-validation-for="ExpiricyPolicyDays" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-success mt-2">
