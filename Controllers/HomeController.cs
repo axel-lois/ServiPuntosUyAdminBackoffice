@@ -15,7 +15,7 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        // ————— Estadísticas existentes —————
+        //  Estadísticas existentes 
         int usuarios       = 0;
         int transacciones  = 0;
         int ofertasActivas = 0;
@@ -45,7 +45,7 @@ public class HomeController : Controller
         ViewBag.Transacciones  = transacciones;
         ViewBag.OfertasActivas = ofertasActivas;
 
-        // ————— Historial de transacciones —————
+        // Historial de transacciones 
         var history = new List<TransactionHistoryDto>();
         using (var client = new HttpClient())
         {
@@ -63,11 +63,11 @@ public class HomeController : Controller
             }
         }
 
-        // ————— Total de puntos canjeados (sumamos pointsSpent) —————
+        // Total de puntos canjeados (sumamos pointsSpent) 
         var puntosCanjeados = history.Sum(h => h.PointsSpent);
         ViewBag.PuntosCanjeados = puntosCanjeados;
 
-        // ————— Datos para la gráfica de los últimos 6 meses —————
+        // Datos para la gráfica de los últimos 6 meses 
         var hoy    = DateTime.UtcNow;
         var labels = Enumerable.Range(0, 6)
                                .Select(i => hoy.AddMonths(-5 + i).ToString("MMM"))

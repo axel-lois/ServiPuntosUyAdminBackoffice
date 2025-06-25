@@ -10,33 +10,29 @@ namespace ServiPuntosUyAdmin.Controllers
 {
     public class TenantController : Controller
     {
-         private readonly string apiBaseUrl = "http://localhost:5162/api/Tenant";
+        private readonly string apiBaseUrl = "http://localhost:5162/api/Tenant";
         private readonly string apiUiUrl    = "http://localhost:5162/api/TenantUI";
+        private const string PublicTenantUrl = "http://localhost:5162/api/public/tenant";
 
         // GET: Tenant/Index
         public async Task<IActionResult> Index()
         {
-            using (var client = new HttpClient())
+            List<Tenant> tenants = new();
+
+            using var client = new HttpClient();
+            var resp = await client.GetAsync(PublicTenantUrl);
+            if (resp.IsSuccessStatusCode)
             {
-                // Token
-                string token = HttpContext.Session.GetString("jwt_token");
-                if (!string.IsNullOrEmpty(token))
-                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-                var response = await client.GetAsync($"{apiBaseUrl}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    var responseObj = JsonConvert.DeserializeObject<TenantListResponse>(json);
-                    if (responseObj != null && responseObj.Data != null)
-                    {
-                        return View(responseObj.Data);
-                    }
-                }
-
-                ViewBag.Error = "No se pudo obtener la lista de cadenas.";
-                return View(new List<Tenant>());
+                var json = await resp.Content.ReadAsStringAsync();
+                var wrapper = JsonConvert.DeserializeObject<ApiResponse<List<Tenant>>>(json);
+                tenants = wrapper?.Data ?? new List<Tenant>();
             }
+            else
+            {
+                ViewBag.Error = "No se pudo cargar la lista de cadenas públicas.";
+            }
+
+            return View(tenants);
         }
 
         // GET: Tenant/Create
@@ -124,7 +120,6 @@ namespace ServiPuntosUyAdmin.Controllers
                 if (!string.IsNullOrEmpty(token))
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                // Asumiendo que la API espera { id, name }
                 var json = JsonConvert.SerializeObject(new
                 {
                     id = tenant.Id,
@@ -184,9 +179,7 @@ namespace ServiPuntosUyAdmin.Controllers
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
                 var response = await client.DeleteAsync($"{apiBaseUrl}/{id}");
-                // Mensaje flash de éxito si querés
                 TempData["Success"] = "¡La cadena se eliminó correctamente!";
-                // Ignoramos el resultado, siempre volvemos al Index
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -205,7 +198,6 @@ namespace ServiPuntosUyAdmin.Controllers
                 if (resp.IsSuccessStatusCode)
                 {
                     var json = await resp.Content.ReadAsStringAsync();
-                    // deserializamos el wrapper { error, data, message }
                     var wrapper = JsonConvert.DeserializeObject<ApiResponse<TenantUIConfig>>(json);
                     if (wrapper is not null && wrapper.Data is not null)
                         config = wrapper.Data;
@@ -260,7 +252,6 @@ namespace ServiPuntosUyAdmin.Controllers
         {
             using (var client = new HttpClient())
             {
-                // Token opcional, si querés protección
                 string token = HttpContext.Session.GetString("jwt_token");
                 if (!string.IsNullOrEmpty(token))
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);

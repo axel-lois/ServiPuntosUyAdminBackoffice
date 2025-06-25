@@ -71,22 +71,19 @@ namespace ServiPuntosUyAdmin.Controllers
                     client.DefaultRequestHeaders.Authorization =
                         new AuthenticationHeaderValue("Bearer", token);
 
-                // 1) Serializas el objeto product a JSON
+                // Serializas el objeto product a JSON
                 var json = JsonSerializer.Serialize(product, new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 });
 
-                // 2) Creas el content aquí
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                // 3) Llamas al endpoint
                 var response = await client.PostAsync($"{_apiUrl}/Create", content);
 
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["Success"] = "Producto creado exitosamente.";
-                    // Explicitamente al Index de Product
                     return RedirectToAction("Index", "Product");
                 }
                 else
@@ -95,7 +92,6 @@ namespace ServiPuntosUyAdmin.Controllers
                 }
             }
 
-            // En caso de error, volvemos a la vista con el mismo modelo para que muestre validaciones
             return View(product);
         }
 
@@ -180,7 +176,6 @@ namespace ServiPuntosUyAdmin.Controllers
                         new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                 }
 
-                // Primero obtenemos el producto para enviar el objeto completo al endpoint Delete
                 var response = await client.GetAsync($"{_apiUrl}/{id}");
                 if (response.IsSuccessStatusCode)
                 {

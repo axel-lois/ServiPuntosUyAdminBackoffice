@@ -6,6 +6,8 @@
     var isLoginPage = (ViewContext.RouteData.Values["Controller"]?.ToString() == "Account"
                        && ViewContext.RouteData.Values["Action"]?.ToString() == "Login");
     var tenantId = Context.Session.GetString("tenant_id"); // Para admin_tenant
+    var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+    var currentAction     = ViewContext.RouteData.Values["Action"]?.ToString();
 }
 
 <!DOCTYPE html>
@@ -30,28 +32,27 @@
                 @* --- Admin Central --- *@
                 @if (userType == "admin_central")
                 {
-                    <a class="sidebar-link" href="/Home/Index"><i class="fa-solid fa-chart-line"></i> Monitoreo del sistema</a>
-                    <a class="sidebar-link" href="/Parameter/Index"><i class="fa-solid fa-cogs"></i> Parámetros Generales</a>
+                    <a class="sidebar-link @(currentController == "Home" ? "active" : "")"href="@Url.Action("Index", "Home")"><i class="fa-solid fa-chart-line me-2"></i> Monitoreo del sistema</a>
+                    <a class="sidebar-link @(currentController == "Parameter" ? "active" : "")"href="@Url.Action("Index", "Parameter")"><i class="fa-solid fa-cogs me-2"></i> Parámetros Generales</a>
+                    <a class="sidebar-link @(currentController == "Tenant" ? "active" : "")"href="@Url.Action("Index", "Tenant")"><i class="fa-solid fa-building me-2"></i> Tenants</a>
                 }
                 @* --- Admin Tenant --- *@
                 else if (userType == "admin_tenant")
                 {
-                    // <a class="sidebar-link" href="/Home/Index"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-                    <a class="sidebar-link" href="/Product/Index"><i class="fa-solid fa-box-open"></i> Productos</a>
-                    <a class="sidebar-link" href="/Station/Index"><i class="fa-solid fa-gas-pump"></i> Estaciones</a>
-                    <a class="sidebar-link" href="/Promotion/Index"><i class="fa-solid fa-gift"></i> Ofertas</a>
-                    <a class="sidebar-link" href="/LoyaltyProgram/Index"><i class="fa-solid fa-star"></i> Programa de Fidelidad</a>
-                    <a class="sidebar-link" href="/Tenant/Personalization/@tenantId"><i class="fa-solid fa-palette"></i> Personalización</a>
+                    <a class="sidebar-link @(currentController=="Product" ? "active" : "")"href="@Url.Action("Index","Product")"><i class="fa-solid fa-box-open me-2"></i> Productos</a>
+                    <a class="sidebar-link @(currentController=="Station" ? "active" : "")"href="@Url.Action("Index","Station")"><i class="fa-solid fa-gas-pump me-2"></i> Estaciones</a>
+                    <a class="sidebar-link @(currentController=="Promotion" && currentAction=="Index" ? "active" : "")"href="@Url.Action("Index","Promotion")"><i class="fa-solid fa-gift me-2"></i> Ofertas</a>
+                    <a class="sidebar-link @(currentController=="LoyaltyProgram" ? "active" : "")"href="@Url.Action("Index","LoyaltyProgram")"><i class="fa-solid fa-star me-2"></i> Programa de Fidelidad</a>
+                    <a class="sidebar-link @(currentController=="Tenant" && currentAction=="Personalization" ? "active" : "")"href="@Url.Action("Personalization","Tenant", new { id = tenantId })"><i class="fa-solid fa-palette me-2"></i> Personalización</a>
                 }
                 @* --- Admin Branch --- *@
                 else if (userType == "admin_branch")
                 {
-                    // <a class="sidebar-link" href="/Home/Index"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-                    <a class="sidebar-link" href="/Station/Hours"><i class="fa-solid fa-gas-pump"></i> Mi Estación</a>
-                    <a class="sidebar-link" href="/Inventory/Index"><i class="fa-solid fa-box-open"></i> Inventario Local</a>
-                    <a class="sidebar-link" href="/Service/Index"><i class="fa-solid fa-concierge-bell"></i> Servicios</a>
-                    <a class="sidebar-link" href="/Fuel/Index"><i class="fa-solid fa-gas-pump"></i> Combustibles</a>
-                    <a class="sidebar-link" href="/Promotion/Branch"><i class="fa-solid fa-gift"></i> Ofertas</a>
+                    <a class="sidebar-link @(currentController=="Station" && currentAction=="Hours" ? "active" : "")"href="@Url.Action("Hours","Station")"><i class="fa-solid fa-gas-pump me-2"></i> Mi Estación</a>
+                    <a class="sidebar-link @(currentController=="Inventory" ? "active" : "")"href="@Url.Action("Index","Inventory")"><i class="fa-solid fa-box-open me-2"></i> Inventario Local</a>
+                    <a class="sidebar-link @(currentController=="Service" ? "active" : "")"href="@Url.Action("Index","Service")"><i class="fa-solid fa-concierge-bell me-2"></i> Servicios</a>
+                    <a class="sidebar-link @(currentController=="Fuel" ? "active" : "")"href="@Url.Action("Index","Fuel")"><i class="fa-solid fa-gas-pump me-2"></i> Combustibles</a>
+                    <a class="sidebar-link @(currentController=="Promotion" && currentAction=="Branch" ? "active" : "")"href="@Url.Action("Branch","Promotion")"><i class="fa-solid fa-gift me-2"></i> Ofertas</a>
                 }
 
                 <a class="sidebar-link" href="/Account/Logout"><i class="fa-solid fa-sign-out-alt"></i> Cerrar sesión</a>

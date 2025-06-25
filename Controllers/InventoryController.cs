@@ -45,7 +45,6 @@ namespace ServiPuntosUyAdmin.Controllers
             return View(list);
         }
 
-        // GET /Inventory/Create?productId=XX&productName=YYY
         [HttpGet]
         public IActionResult Create(int productId, string productName)
         {
@@ -58,7 +57,6 @@ namespace ServiPuntosUyAdmin.Controllers
             return View("Edit", vm);
         }
 
-        // GET /Inventory/Edit?productId=XX&productName=YYY&quantity=NN
         [HttpGet]
         public IActionResult Edit(int productId, string productName, int quantity)
         {
@@ -71,7 +69,6 @@ namespace ServiPuntosUyAdmin.Controllers
             return View(vm);
         }
 
-        // POST both Create y Edit apuntan aquí
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(InventoryStockViewModel vm)
@@ -85,7 +82,6 @@ namespace ServiPuntosUyAdmin.Controllers
                 client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", token);
 
-            // <<< aquí usamos 'stock', no 'quantity'
             var payload = new
             {
                 productId = vm.ProductId,

@@ -19,17 +19,16 @@ namespace ServiPuntosUyAdmin.Controllers
         // GET: Fuel/Index
         public async Task<IActionResult> Index()
         {
-            // 1) obtenemos branchId de sesión
+            // obtenemos branchId de sesión
             if (!int.TryParse(HttpContext.Session.GetString("branch_id"), out int branchId))
                 return RedirectToAction("Login", "Account");
 
-            // 2) preparamos cliente
             using var client = new HttpClient();
             var token = HttpContext.Session.GetString("jwt_token");
             if (!string.IsNullOrEmpty(token))
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            // 3) llamamos a GET /api/Fuel/{branchId}/prices
+            // llamamos a GET /api/Fuel/{branchId}/prices
             var resp = await client.GetAsync($"{apiBase}/{branchId}/prices");
             if (!resp.IsSuccessStatusCode)
             {
@@ -91,14 +90,12 @@ namespace ServiPuntosUyAdmin.Controllers
             if (!int.TryParse(HttpContext.Session.GetString("branch_id"), out int branchId))
                 return RedirectToAction("Login", "Account");
 
-            // Leemos el valor bruto que el usuario ingresó
             var formPrice = Request.Form["Price"].ToString().Trim();
 
             // Normalizamos tanto "," como "." a punto
             // para luego parsear con InvariantCulture
             var normalized = formPrice
                 .Replace(",", ".")
-                // elimina espacios, si hubiera
                 .Replace(" ", "");
 
             if (!decimal.TryParse(
@@ -111,7 +108,6 @@ namespace ServiPuntosUyAdmin.Controllers
                 return View(vm);
             }
 
-            // Ahora armamos el contenido según lo espera tu API (puro número con punto)
             var priceRaw = parsedPrice.ToString(CultureInfo.InvariantCulture);
             var content  = new StringContent(priceRaw, Encoding.UTF8, "application/json");
 

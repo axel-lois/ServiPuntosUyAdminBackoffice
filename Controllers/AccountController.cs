@@ -23,7 +23,7 @@ namespace ServiPuntosUyAdmin.Controllers
         public async Task<IActionResult> Login(string email, string password, string userType, string tenantName = null)
         {
             using var http = new HttpClient { BaseAddress = new Uri("http://localhost:5162") };
-            // 1) Login
+            // Login
             var loginPayload = new { email, password };
             var loginContent = new StringContent(JsonConvert.SerializeObject(loginPayload), Encoding.UTF8, "application/json");
             var loginRequest = new HttpRequestMessage(HttpMethod.Post, "/api/Auth/login") { Content = loginContent };
@@ -38,7 +38,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 return View();
             }
 
-            // 2) Extraer token
+            // Extraigo token
             var loginJson = await loginResp.Content.ReadAsStringAsync();
             var loginObj  = JObject.Parse(loginJson);
             var token     = loginObj["data"]?["token"]?.Value<string>();
@@ -48,7 +48,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 return View();
             }
 
-            // 3) /api/Auth/me
+            // consumo de Auth/me
             var meRequest = new HttpRequestMessage(HttpMethod.Get, "/api/Auth/me");
             meRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var meResp = await http.SendAsync(meRequest);
@@ -67,13 +67,12 @@ namespace ServiPuntosUyAdmin.Controllers
                 return View();
             }
 
-            // 4) Leer userType, tenantId y branchId
             int  userTypeReal  = data["userType"]?.Value<int>()   ?? 0;
             int? tenantIdValue = data["tenantId"]?.Value<int?>();
             int? branchIdValue = data["branchId"]?.Value<int?>();
             string nameValue   = data["name"]?.Value<string>()   ?? "";
 
-            // 5) Guardar en sesión
+            // Guardo en sesión
             var session = HttpContext.Session;
             session.SetString("AdminLogged", "true");
             session.SetString("jwt_token",   token);
@@ -86,21 +85,17 @@ namespace ServiPuntosUyAdmin.Controllers
             if (userTypeReal == 2 && tenantIdValue.HasValue)
                 session.SetString("tenant_id", tenantIdValue.Value.ToString());
 
-            // <<-- ESTE BLOQUE ES NUEVO, ASEGÚRATE DE INCLUIRLO
             if (userTypeReal == 3 && branchIdValue.HasValue)
                 session.SetString("branch_id", branchIdValue.Value.ToString());
-            // -->>
 
             session.SetString("AdminName", nameValue);
 
             if (userTypeReal == 2 && tenantIdValue.HasValue)
             {
-                // Admin Branch
                 return RedirectToAction("Index", "Product", new { id = tenantIdValue.Value });
             }
             if (userTypeReal == 3 && branchIdValue.HasValue)
             {
-                // Admin Branch
                 return RedirectToAction("Hours", "Station", new { id = branchIdValue.Value });
             }
 

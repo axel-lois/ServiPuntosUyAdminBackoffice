@@ -35,7 +35,6 @@
         <div class="admin-auth-error">@ViewBag.Error</div>
     }
     <form asp-action="Login" method="post" class="admin-auth-form" id="authForm">
-        <!-- Combo de tipo de usuario -->
         <select name="userType" id="userTypeSelect" class="admin-auth-input" required>
             <option value="Central">Admin Central</option>
             <option value="Tenant">Admin Tenant</option>
@@ -68,7 +67,6 @@ document.addEventListener('DOMContentLoaded', function () {
             tenantNameSelect.style.display = '';
             tenantNameSelect.required      = true;
 
-            // Cambia solo el texto del option[0]
             tenantNameSelect.options[0].text = ut === 'Branch' ? 'Seleccioná sucursal' : 'Seleccioná tu Tenant';
 
             // Solo cargar tenants una vez
@@ -91,7 +89,6 @@ document.addEventListener('DOMContentLoaded', function () {
                   });
             }
         } else {
-            // Oculta para Central
             tenantNameSelect.style.display = 'none';
             tenantNameSelect.required      = false;
             tenantNameSelect.selectedIndex = 0;
@@ -99,7 +96,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     userTypeSelect.addEventListener('change', handleUserTypeChange);
-    // Estado inicial
     handleUserTypeChange();
 });
 </script>

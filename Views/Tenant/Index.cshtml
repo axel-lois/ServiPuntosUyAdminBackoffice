@@ -7,21 +7,29 @@
 <a class="btn btn-success" href="/Tenant/Create"><i class="fa fa-plus"></i> Nueva Cadena</a>
 @if (TempData["Success"] != null)
 {
-    <div class="alert alert-success" style="margin-top:15px;">
-        @TempData["Success"]
-    </div>
+    <div class="alert alert-success" id="successMsg">@TempData["Success"]</div>
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('successMsg');
+            if (el) el.style.display = 'none';
+        }, 3000);
+    </script>
 }
-@if (ViewBag.Error != null)
+
+@if (TempData["Error"] != null)
 {
-    <div class="alert alert-danger" style="margin-top:15px;">
-        @ViewBag.Error
-    </div>
+    <div class="alert alert-danger" id="errorMsg">@TempData["Error"]</div>
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('errorMsg');
+            if (el) el.style.display = 'none';
+        }, 4000);
+    </script>
 }
 
 <table class="table table-bordered table-striped">
     <thead>
         <tr>
-            <th>Id</th>
             <th>Nombre</th>
         </tr>
     </thead>
@@ -29,7 +37,6 @@
         @foreach(var t in Model)
         {
             <tr>
-                <td>@t.Id</td>
                 <td>@t.Name</td>
             </tr>
         }

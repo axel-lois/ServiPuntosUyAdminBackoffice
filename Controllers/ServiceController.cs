@@ -25,7 +25,7 @@ namespace ServiPuntosUyAdmin.Controllers
             _logger = logger;
         }
 
-        // 1) Listado de servicios de esta sucursal
+        // Listado de servicios de esta sucursal
         public async Task<IActionResult> Index()
         {
             // Si no hay branch_id en sesión, lo mandamos al login
@@ -102,14 +102,13 @@ namespace ServiPuntosUyAdmin.Controllers
             }
             else
             {
-                // 1) leo el body completo
+                //  leo el body completo
                 var jsonError = await resp.Content.ReadAsStringAsync();
 
-                // 2) intento parsear solo el campo 'message'
+                //  intento parsear solo el campo 'message'
                 string friendly;
                 try
                 {
-                    // esta clase auxiliar la defines justo abajo
                     var wrapper = System.Text.Json.JsonSerializer.Deserialize<ErrorWrapper>(
                         jsonError,
                         new System.Text.Json.JsonSerializerOptions
@@ -125,15 +124,9 @@ namespace ServiPuntosUyAdmin.Controllers
                     friendly = "Error al crear el servicio.";
                 }
 
-                // 3) lo meto en ModelState para que lo muestre ValidationSummary
                 ModelState.AddModelError(string.Empty, friendly);
                 return View(vm);
             }
-        /*
-            var error = await resp.Content.ReadAsStringAsync();
-            ModelState.AddModelError("", $"Error al crear el servicio: {error}");
-            return View(vm);
-            */
         }
 
         [HttpGet]
@@ -187,7 +180,6 @@ namespace ServiPuntosUyAdmin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Volvemos a la vista con validaciones desplegadas
                 return View(vm);
             }
 

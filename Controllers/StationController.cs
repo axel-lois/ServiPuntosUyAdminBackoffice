@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Net;
 
-// Aliases para evitar ambigüedad
 using JsonNet       = Newtonsoft.Json;
 using SystemJson    = System.Text.Json;
 using System.Net.Http.Headers; 
@@ -38,7 +37,6 @@ namespace ServiPuntosUyAdmin.Controllers
                         if (!string.IsNullOrEmpty(token))
                             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                        // Traer todas las estaciones y filtrar por tenant (o armá el endpoint en la API para esto)
                         var response = await client.GetAsync("http://localhost:5162/api/Branch");
                         if (response.IsSuccessStatusCode)
                         {
@@ -48,7 +46,6 @@ namespace ServiPuntosUyAdmin.Controllers
                                 stations = result.Data.Where(s => s.TenantId == tenantId).ToList();
                         }
 
-                        // Cargar solo su tenant para el ViewBag
                         var respTenant = await client.GetAsync($"http://localhost:5162/api/Tenant/{tenantId}");
                         if (respTenant.IsSuccessStatusCode)
                         {
@@ -85,7 +82,6 @@ namespace ServiPuntosUyAdmin.Controllers
             return View(stations);
         }
 
-        // --- Reutilizable: Obtener todos los tenants ---
         private async Task<List<Tenant>> ObtenerTenants()
         {
             var tenants = new List<Tenant>();
@@ -169,7 +165,6 @@ namespace ServiPuntosUyAdmin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Station station)
         {
-            // Recuperar tenants según tipo usuario para errores de validación también
             List<Tenant> tenants = new List<Tenant>();
             var userType = HttpContext.Session.GetString("user_type");
 
@@ -308,7 +303,6 @@ namespace ServiPuntosUyAdmin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Station station)
         {
-            // Recuperar tenants para la view en caso de error
             List<Tenant> tenants = new List<Tenant>();
             var userType = HttpContext.Session.GetString("user_type");
 
@@ -441,7 +435,6 @@ namespace ServiPuntosUyAdmin.Controllers
             if (!int.TryParse(HttpContext.Session.GetString("branch_id"), out var branchId))
                 return RedirectToAction("Login", "Account");
 
-            // Formulario vacío (o podrías precargar valores fijos)
             var vm = new StationHoursDto
             {
                 BranchId = branchId
@@ -488,7 +481,6 @@ namespace ServiPuntosUyAdmin.Controllers
             }
 
             TempData["Success"] = "Horarios actualizados correctamente";
-            // Volvemos a mostrar el formulario (vacío o con el mismo llamado GET)
             return RedirectToAction(nameof(Hours));
         }
     }
