@@ -2,6 +2,10 @@ using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Obtener el puerto de la variable de entorno PORT (para Railway)
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5270";
+builder.WebHost.UseUrls($"http://*:{port}");
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
