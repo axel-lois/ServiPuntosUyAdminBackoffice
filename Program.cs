@@ -1,8 +1,27 @@
+using System.Net.Http.Headers;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
+builder.Services.AddHttpContextAccessor();
+
+// Handler que inyecta el Bearer token desde Session (solo si haces login y usas token)
+builder.Services.AddTransient<AuthTokenHandler>();
+
+// HttpClient “limpio” para login/u otras llamadas sin token
+builder.Services.AddHttpClient("ApiClient", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["API_BASE_URL"]!);
+});
+
+// HttpClient con token automático (añade Authorization: Bearer {token})
+builder.Services.AddHttpClient("ApiClientWithToken", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["API_BASE_URL"]!);
+})
+.AddHttpMessageHandler<AuthTokenHandler>();
 
 var app = builder.Build();
 
@@ -28,3 +47,19 @@ app.MapControllerRoute(
     pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();
+
+public class AuthTokenHandler : DelegatingHandler
+{
+    private readonly IHttpContextAccessor _ctx;
+    public AuthTokenHandler(IHttpContextAccessor ctx) => _ctx = ctx;
+
+    protected override async Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        var token = _ctx.HttpContext?.Session.GetString("JWToken");
+        if (!string.IsNullOrEmpty(token))
+            request.Headers.Authorization = 
+                new AuthenticationHeaderValue("Bearer", token);
+        return await base.SendAsync(request, cancellationToken);
+    }
+}

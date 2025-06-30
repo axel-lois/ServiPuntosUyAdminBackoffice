@@ -1,3 +1,5 @@
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
 @{
     ViewData["Title"] = "Admin Login";
 }
@@ -57,45 +59,47 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const userTypeSelect    = document.getElementById('userTypeSelect');
-    const tenantNameSelect  = document.getElementById('tenantNameSelect');
+  document.addEventListener('DOMContentLoaded', function () {
+    const apiBase = '@Configuration["API_BASE_URL"]';
+    const userTypeSelect   = document.getElementById('userTypeSelect');
+    const tenantNameSelect = document.getElementById('tenantNameSelect');
 
-    function handleUserTypeChange() {
-        const ut = userTypeSelect.value;
-        if (ut === 'Tenant' || ut === 'Branch') {
-            tenantNameSelect.style.display = '';
-            tenantNameSelect.required      = true;
+    async function handleUserTypeChange() {
+      const ut = userTypeSelect.value;
+      if (ut === 'Tenant' || ut === 'Branch') {
+        tenantNameSelect.style.display = '';
+        tenantNameSelect.required      = true;
+        tenantNameSelect.options[0].text = ut === 'Branch'
+            ? 'Seleccioná sucursal'
+            : 'Seleccioná tu Tenant';
 
-            tenantNameSelect.options[0].text = ut === 'Branch' ? 'Seleccioná sucursal' : 'Seleccioná tu Tenant';
-
-            // Solo cargar tenants una vez
-            if (tenantNameSelect.options.length <= 1) {
-                fetch('http://localhost:5162/api/public/tenant', { mode: 'cors' })
-                  .then(resp => {
-                    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-                    return resp.json();
-                  })
-                  .then(result => {
-                    (result.data || []).forEach(t => {
-                      const opt = document.createElement('option');
-                      opt.value = t.name;
-                      opt.text  = t.name;
-                      tenantNameSelect.appendChild(opt);
-                    });
-                  })
-                  .catch(err => {
-                    console.error('Error cargando tenants públicos:', err);
-                  });
-            }
-        } else {
-            tenantNameSelect.style.display = 'none';
-            tenantNameSelect.required      = false;
-            tenantNameSelect.selectedIndex = 0;
+        // carga solo una vez
+        if (tenantNameSelect.options.length <= 1) {
+          try {
+            const resp = await fetch(`${apiBase}/api/public/tenant`);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const result = await resp.json();
+            // si tu API responde con { data: [...] }
+            (result.data || []).forEach(t => {
+              const opt = document.createElement('option');
+              opt.value = t.name;
+              opt.text  = t.name;
+              tenantNameSelect.appendChild(opt);
+            });
+          } catch (err) {
+            console.error('Error cargando tenants públicos:', err);
+            // opcional: muestra un mensaje en la UI
+            alert('No se pudo cargar la lista de tenants.');
+          }
         }
+      } else {
+        tenantNameSelect.style.display = 'none';
+        tenantNameSelect.required      = false;
+        tenantNameSelect.selectedIndex = 0;
+      }
     }
 
     userTypeSelect.addEventListener('change', handleUserTypeChange);
     handleUserTypeChange();
-});
+  });
 </script>

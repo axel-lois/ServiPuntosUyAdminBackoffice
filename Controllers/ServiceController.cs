@@ -11,6 +11,8 @@ using JsonNet = Newtonsoft.Json;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
+using System;
+using Microsoft.Extensions.Configuration;
 
 
 namespace ServiPuntosUyAdmin.Controllers
@@ -18,11 +20,14 @@ namespace ServiPuntosUyAdmin.Controllers
     public class ServiceController : Controller
     {
         private readonly ILogger<ServiceController> _logger;
-        private readonly string apiBase = "http://localhost:5162/api/Service";
+        private readonly string _apiBaseUrl;
 
-        public ServiceController(ILogger<ServiceController> logger)
+        public ServiceController(ILogger<ServiceController> logger, IConfiguration config)
         {
             _logger = logger;
+            var baseUrl = config["API_BASE_URL"]
+                        ?? throw new InvalidOperationException("Tienes que definir API_BASE_URL");
+            _apiBaseUrl = $"{baseUrl}/api/Service";
         }
 
         // Listado de servicios de esta sucursal
@@ -40,7 +45,7 @@ namespace ServiPuntosUyAdmin.Controllers
                     new AuthenticationHeaderValue("Bearer", token);
 
             // LLAMADA sin parámetro: /api/Service/branch
-            var resp = await client.GetAsync($"{apiBase}/branch");
+            var resp = await client.GetAsync($"{_apiBaseUrl}/branch");
             if (!resp.IsSuccessStatusCode)
             {
                 TempData["Error"] = "No se pudieron obtener los servicios";
@@ -94,7 +99,7 @@ namespace ServiPuntosUyAdmin.Controllers
             var json    = JsonNet.JsonConvert.SerializeObject(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var resp = await client.PostAsync($"{apiBase}/create", content);
+            var resp = await client.PostAsync($"{_apiBaseUrl}/create", content);
             if (resp.IsSuccessStatusCode)
             {
                 TempData["Success"] = "Servicio creado correctamente";
@@ -141,7 +146,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 client.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            var resp = await client.GetAsync($"{apiBase}/{id}");
+            var resp = await client.GetAsync($"{_apiBaseUrl}/{id}");
             if (!resp.IsSuccessStatusCode)
             {
                 TempData["Error"] = "No se encontró el servicio";
@@ -203,7 +208,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 "application/json"
             );
 
-            var resp = await client.PutAsync($"{apiBase}/{vm.Id}", content);
+            var resp = await client.PutAsync($"{_apiBaseUrl}/{vm.Id}", content);
             if (resp.IsSuccessStatusCode)
             {
                 TempData["Success"] = "Servicio actualizado correctamente";
@@ -225,7 +230,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 client.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            var resp = await client.DeleteAsync($"{apiBase}/{id}");
+            var resp = await client.DeleteAsync($"{_apiBaseUrl}/{id}");
             if (resp.IsSuccessStatusCode)
                 TempData["Success"] = "Servicio eliminado correctamente";
             else

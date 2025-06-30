@@ -5,12 +5,25 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ServiPuntosUyAdmin.Models;
+using Newtonsoft.Json;
+using ServiPuntosUyAdmin.Models;
+ using Microsoft.AspNetCore.Mvc;
+ using Microsoft.AspNetCore.Http;
+ using ServiPuntosUyAdmin.Models;
+ using Newtonsoft.Json;
 
 namespace ServiPuntosUyAdmin.Controllers
 {
     public class OfferController : Controller
     {
-        private readonly string apiBase = "http://localhost:5162/api/Promotion";
+        private readonly string _apiBaseUrl;
+
+        public OfferController(IConfiguration config)
+        {
+            var baseUrl = config["API_BASE_URL"]
+                          ?? throw new InvalidOperationException("Tienes que definir API_BASE_URL");
+            _apiBaseUrl = $"{baseUrl}/api/Promotion";
+        }
 
         // GET: /Offer/Index
         public async Task<IActionResult> Index()
@@ -26,7 +39,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 client.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            var resp = await client.GetAsync($"{apiBase}/branch");
+            var resp = await client.GetAsync($"{_apiBaseUrl}/branch");
             if (!resp.IsSuccessStatusCode)
             {
                 TempData["Error"] = "No se pudieron obtener las ofertas";

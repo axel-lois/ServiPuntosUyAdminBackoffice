@@ -8,18 +8,25 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Globalization;
-
+using System;
+using Microsoft.Extensions.Configuration;
 
 namespace ServiPuntosUyAdmin.Controllers
 {
     public class FuelController : Controller
     {
-        private readonly string apiBase = "http://localhost:5162/api/Fuel";
+        private readonly string _apiBaseUrl;
+
+        public FuelController(IConfiguration config)
+        {
+            var baseUrl = config["API_BASE_URL"]
+                        ?? throw new InvalidOperationException("Tienes que definir API_BASE_URL");
+            _apiBaseUrl = $"{baseUrl}/api/Fuel";
+        }
 
         // GET: Fuel/Index
         public async Task<IActionResult> Index()
         {
-            // obtenemos branchId de sesión
             if (!int.TryParse(HttpContext.Session.GetString("branch_id"), out int branchId))
                 return RedirectToAction("Login", "Account");
 
@@ -28,8 +35,7 @@ namespace ServiPuntosUyAdmin.Controllers
             if (!string.IsNullOrEmpty(token))
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            // llamamos a GET /api/Fuel/{branchId}/prices
-            var resp = await client.GetAsync($"{apiBase}/{branchId}/prices");
+            var resp = await client.GetAsync($"{_apiBaseUrl}/{branchId}/prices");
             if (!resp.IsSuccessStatusCode)
             {
                 TempData["Error"] = "No se pudieron cargar los precios de combustibles.";
@@ -58,8 +64,7 @@ namespace ServiPuntosUyAdmin.Controllers
             if (!string.IsNullOrEmpty(token))
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            // GET /api/Fuel/{branchId}/price/{fuelType}
-            var resp = await client.GetAsync($"{apiBase}/{branchId}/price/{id}");
+            var resp = await client.GetAsync($"{_apiBaseUrl}/{branchId}/price/{id}");
             if (!resp.IsSuccessStatusCode)
             {
                 TempData["Error"] = "No se encontró el precio para ese combustible.";
@@ -86,14 +91,10 @@ namespace ServiPuntosUyAdmin.Controllers
             if (!ModelState.IsValid)
                 return View(vm);
 
-            // obtenemos branchId de la sesión
             if (!int.TryParse(HttpContext.Session.GetString("branch_id"), out int branchId))
                 return RedirectToAction("Login", "Account");
 
             var formPrice = Request.Form["Price"].ToString().Trim();
-
-            // Normalizamos tanto "," como "." a punto
-            // para luego parsear con InvariantCulture
             var normalized = formPrice
                 .Replace(",", ".")
                 .Replace(" ", "");
@@ -117,7 +118,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var resp = await client.PutAsync(
-                $"{apiBase}/{branchId}/price/{id}",
+                $"{_apiBaseUrl}/{branchId}/price/{id}",
                 content
             );
 

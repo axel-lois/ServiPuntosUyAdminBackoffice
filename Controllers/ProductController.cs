@@ -6,12 +6,22 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Http;
+using System;
+using Microsoft.Extensions.Configuration;
 
 namespace ServiPuntosUyAdmin.Controllers
 {
     public class ProductController : Controller
     {
-        private readonly string _apiUrl = "http://localhost:5162/api/Product";
+        private readonly string _apiUrl;
+
+        public ProductController(IConfiguration config)
+        {
+            var baseUrl = config["API_BASE_URL"]
+                        ?? throw new InvalidOperationException("Tienes que definir API_BASE_URL");
+            _apiUrl = $"{baseUrl}/api/Product";
+        }
 
         public async Task<IActionResult> Index()
         {

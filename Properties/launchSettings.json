@@ -15,7 +15,8 @@
       "launchBrowser": true,
       "applicationUrl": "http://admin.servipuntos.local:5270",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "API_BASE_URL": "https://tecnoinf-dotnet-be-production.up.railway.app"
       }
     },
     "https": {

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -6,12 +7,21 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text.Json;
 using ServiPuntosUyAdmin.Models;
+using System;
+using Microsoft.Extensions.Configuration;
 
 namespace ServiPuntosUyAdmin.Controllers
 {
     public class LoyaltyProgramController : Controller
     {
-        private readonly string apiBase = "http://localhost:5162/api/LoyaltyProgram";
+        private readonly string _apiBaseUrl;
+
+        public LoyaltyProgramController(IConfiguration config)
+        {
+            var baseUrl = config["API_BASE_URL"]
+                        ?? throw new InvalidOperationException("Tienes que definir API_BASE_URL");
+            _apiBaseUrl = $"{baseUrl}/api/LoyaltyProgram";
+        }
 
         // GET: LoyaltyProgram/Index
         public async Task<IActionResult> Index()
@@ -24,7 +34,7 @@ namespace ServiPuntosUyAdmin.Controllers
             if (!string.IsNullOrEmpty(token))
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var resp = await client.GetAsync($"{apiBase}/{tenantId}/program");
+            var resp = await client.GetAsync($"{_apiBaseUrl}/{tenantId}/program");
             if (!resp.IsSuccessStatusCode)
             {
                 TempData["Error"] = "No se pudo obtener el programa de fidelidad.";
@@ -60,7 +70,7 @@ namespace ServiPuntosUyAdmin.Controllers
             var payload = JsonSerializer.Serialize(vm);
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-            var resp = await client.PostAsync(apiBase, content);
+            var resp = await client.PostAsync(_apiBaseUrl, content);
             if (resp.IsSuccessStatusCode)
             {
                 TempData["Success"] = "Programa creado correctamente";
@@ -85,7 +95,7 @@ namespace ServiPuntosUyAdmin.Controllers
             if (!string.IsNullOrEmpty(token))
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var resp = await client.GetAsync($"{apiBase}/{tenantId}/program");
+            var resp = await client.GetAsync($"{_apiBaseUrl}/{tenantId}/program");
             if (!resp.IsSuccessStatusCode)
             {
                 TempData["Error"] = "No se pudo obtener el programa para editar.";
@@ -115,7 +125,7 @@ namespace ServiPuntosUyAdmin.Controllers
             var payload = JsonSerializer.Serialize(vm);
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-            var resp = await client.PutAsync(apiBase, content);
+            var resp = await client.PutAsync(_apiBaseUrl, content);
             if (resp.IsSuccessStatusCode)
             {
                 TempData["Success"] = "Programa editado correctamente";

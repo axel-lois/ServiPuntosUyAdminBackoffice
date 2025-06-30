@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;       // <-- nuevo
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,15 @@ namespace ServiPuntosUyAdmin.Controllers
 {
     public class AccountController : Controller
     {
+        private readonly string _apiBaseUrl;
+
+        // 1) Inyecta IConfiguration
+        public AccountController(IConfiguration config)
+        {
+            _apiBaseUrl = config["API_BASE_URL"] 
+                        ?? throw new InvalidOperationException("define API_BASE_URL");
+        }
+
         [HttpGet]
         public IActionResult Login()
         {
@@ -20,16 +30,33 @@ namespace ServiPuntosUyAdmin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(string email, string password, string userType, string tenantName = null)
+        public async Task<IActionResult> Login(
+            string email,
+            string password,
+            string userType,
+            string tenantName = null)
         {
-            using var http = new HttpClient { BaseAddress = new Uri("http://localhost:5162") };
+            // 2) Usa _apiBaseUrl directo, sin localhost
+            using var http = new HttpClient { BaseAddress = new Uri(_apiBaseUrl) };
+
             // Login
             var loginPayload = new { email, password };
-            var loginContent = new StringContent(JsonConvert.SerializeObject(loginPayload), Encoding.UTF8, "application/json");
-            var loginRequest = new HttpRequestMessage(HttpMethod.Post, "/api/Auth/login") { Content = loginContent };
+            var loginContent = new StringContent(
+                JsonConvert.SerializeObject(loginPayload),
+                Encoding.UTF8,
+                "application/json"
+            );
+            var loginRequest = new HttpRequestMessage(
+                HttpMethod.Post,
+                "/api/Auth/login"
+            ) { Content = loginContent };
+
             loginRequest.Headers.Add("X-User-Type", userType);
-            if ((userType == "Tenant" || userType == "Branch") && !string.IsNullOrEmpty(tenantName))
+            if ((userType == "Tenant" || userType == "Branch")
+                && !string.IsNullOrEmpty(tenantName))
+            {
                 loginRequest.Headers.Add("X-Tenant-Name", tenantName);
+            }
 
             var loginResp = await http.SendAsync(loginRequest);
             if (!loginResp.IsSuccessStatusCode)
@@ -50,7 +77,8 @@ namespace ServiPuntosUyAdmin.Controllers
 
             // consumo de Auth/me
             var meRequest = new HttpRequestMessage(HttpMethod.Get, "/api/Auth/me");
-            meRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            meRequest.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
             var meResp = await http.SendAsync(meRequest);
             if (!meResp.IsSuccessStatusCode)
             {
@@ -91,46 +119,48 @@ namespace ServiPuntosUyAdmin.Controllers
             session.SetString("AdminName", nameValue);
 
             if (userTypeReal == 2 && tenantIdValue.HasValue)
-            {
                 return RedirectToAction("Index", "Product", new { id = tenantIdValue.Value });
-            }
+
             if (userTypeReal == 3 && branchIdValue.HasValue)
-            {
                 return RedirectToAction("Hours", "Station", new { id = branchIdValue.Value });
-            }
 
             return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
-        public async Task<IActionResult> Signup(string email, string password, string name, string userType)
+        public async Task<IActionResult> Signup(
+            string email,
+            string password,
+            string name,
+            string userType)
         {
-            using (var http = new HttpClient())
+            using var http = new HttpClient { BaseAddress = new Uri(_apiBaseUrl) };
+
+            var payload = new { email, password, name };
+            var content = new StringContent(
+                JsonConvert.SerializeObject(payload),
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/Auth/signup")
+            { Content = content };
+            request.Headers.Add("X-User-Type", userType);
+
+            var response = await http.SendAsync(request);
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
             {
-                http.BaseAddress = new Uri("http://localhost:5162/");
-                var payload = new { email = email, password = password, name = name };
-                var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"); 
-
-                var request = new HttpRequestMessage(HttpMethod.Post, "/api/Auth/signup") { Content = content };
-                request.Headers.Add("X-User-Type", userType);
-
-                var response = await http.SendAsync(request);
-
-                var responseBody = await response.Content.ReadAsStringAsync();
-
-                if (response.IsSuccessStatusCode)
-                {
-                    TempData["Success"] = "¡Usuario registrado correctamente! Ahora podés iniciar sesión.";
-                    return RedirectToAction("Login");
-                }
-                else
-                {
-                    ViewBag.Error = "No se pudo registrar el usuario. " + responseBody;
-                    return View("Login");
-                }
+                TempData["Success"] = "¡Usuario registrado correctamente! Ahora podés iniciar sesión.";
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                ViewBag.Error = "No se pudo registrar el usuario. " + responseBody;
+                return View("Login");
             }
         }
-
 
         public IActionResult Logout()
         {

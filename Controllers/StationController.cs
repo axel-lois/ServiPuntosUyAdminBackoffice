@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System;
 using Microsoft.AspNetCore.Http;
 using ServiPuntosUyAdmin.Models;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Net;
-
+using Microsoft.Extensions.Configuration;
 using JsonNet       = Newtonsoft.Json;
 using SystemJson    = System.Text.Json;
 using System.Net.Http.Headers; 
@@ -17,7 +18,16 @@ namespace ServiPuntosUyAdmin.Controllers
 {
     public class StationController : Controller
     {
-        private readonly string apiBaseUrl = "http://localhost:5162/api/Branch";
+        private readonly string _apiBranchUrl;
+        private readonly string _apiTenantUrl;
+
+        public StationController(IConfiguration config)
+        {
+            var baseUrl = config["API_BASE_URL"]
+                          ?? throw new InvalidOperationException("Tienes que definir API_BASE_URL");
+            _apiBranchUrl = $"{baseUrl}/api/Branch";
+            _apiTenantUrl = $"{baseUrl}/api/Tenant";
+        }
 
         // GET: Station/Index
         public async Task<IActionResult> Index()
@@ -37,7 +47,7 @@ namespace ServiPuntosUyAdmin.Controllers
                         if (!string.IsNullOrEmpty(token))
                             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                        var response = await client.GetAsync("http://localhost:5162/api/Branch");
+                        var response = await client.GetAsync(_apiBranchUrl);
                         if (response.IsSuccessStatusCode)
                         {
                             var json = await response.Content.ReadAsStringAsync();
@@ -46,7 +56,7 @@ namespace ServiPuntosUyAdmin.Controllers
                                 stations = result.Data.Where(s => s.TenantId == tenantId).ToList();
                         }
 
-                        var respTenant = await client.GetAsync($"http://localhost:5162/api/Tenant/{tenantId}");
+                        var respTenant = await client.GetAsync($"{_apiTenantUrl}/{tenantId}");
                         if (respTenant.IsSuccessStatusCode)
                         {
                             var json = await respTenant.Content.ReadAsStringAsync();
@@ -65,7 +75,7 @@ namespace ServiPuntosUyAdmin.Controllers
                     if (!string.IsNullOrEmpty(token))
                         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                    var response = await client.GetAsync("http://localhost:5162/api/Branch");
+                    var response = await client.GetAsync(_apiBranchUrl);
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
@@ -91,7 +101,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 if (!string.IsNullOrEmpty(token))
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                var response = await client.GetAsync("http://localhost:5162/api/Tenant");
+                var response = await client.GetAsync(_apiTenantUrl);
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -121,7 +131,7 @@ namespace ServiPuntosUyAdmin.Controllers
                         if (!string.IsNullOrEmpty(token))
                             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                        var resp = await client.GetAsync($"http://localhost:5162/api/Tenant/{tenantId}");
+                        var resp = await client.GetAsync($"{_apiTenantUrl}/{tenantId}");
                         var json = await resp.Content.ReadAsStringAsync();
                         System.Diagnostics.Debug.WriteLine($"[DEBUG] Tenant API resp: {json}");
 
@@ -218,7 +228,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 });
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await client.PostAsync($"{apiBaseUrl}/Create", content);
+                var response = await client.PostAsync($"{_apiBranchUrl}/Create", content);
 
                 string apiResponse = await response.Content.ReadAsStringAsync();
 
@@ -277,8 +287,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 if (!string.IsNullOrEmpty(token))
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                var url = $"http://localhost:5162/api/Branch";
-                var response = await client.GetAsync(url);
+                var response = await client.GetAsync(_apiBranchUrl);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
@@ -355,7 +364,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 });
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"http://localhost:5162/api/Branch/{station.Id}/Update")
+                var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_apiBranchUrl}/{station.Id}/Update")
                 {
                     Content = content
                 };
@@ -385,7 +394,7 @@ namespace ServiPuntosUyAdmin.Controllers
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
                 // Solo se puede hacer GET de todas, no por id
-                var response = await client.GetAsync($"{apiBaseUrl}");
+                var response = await client.GetAsync(_apiBranchUrl);
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -414,7 +423,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 if (!string.IsNullOrEmpty(token))
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                var response = await client.DeleteAsync($"{apiBaseUrl}/{id}/Delete");
+                var response = await client.DeleteAsync($"{_apiBranchUrl}/{id}/Delete");
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["Success"] = "¡La estación se eliminó correctamente!";
@@ -467,7 +476,7 @@ namespace ServiPuntosUyAdmin.Controllers
             // Serializamos y enviamos
             var json = JsonNet.JsonConvert.SerializeObject(payload);
             using var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var resp = await client.PostAsync($"{apiBaseUrl}/hours", content);
+            var resp = await client.PostAsync($"{_apiBranchUrl}/hours", content);
 
             // SI JWT expiró, redirige de una vez al login
             if (resp.StatusCode == HttpStatusCode.Unauthorized)

@@ -8,13 +8,26 @@ using System.Collections.Generic;
 using System.Text;
 using JsonNet = Newtonsoft.Json;
 using System.Text.Json;
+using System;
+using Microsoft.Extensions.Configuration;
 
 namespace ServiPuntosUyAdmin.Controllers
 {
     public class InventoryController : Controller
     {
-        private const string ApiGetProducts = "http://localhost:5162/api/Branch/products";
-        private const string ApiPostStock   = "http://localhost:5162/api/Branch/stock";
+        private readonly string _apiBaseUrl;
+        private readonly string _apiProductsUrl;
+        private readonly string _apiStockUrl;
+
+        public InventoryController(IConfiguration config)
+        {
+            var baseUrl = config["API_BASE_URL"]
+                          ?? throw new InvalidOperationException("Tienes que definir API_BASE_URL");
+            // URL para obtener productos
+            _apiProductsUrl = $"{baseUrl}/api/Branch/products";
+            // URL para actualizar stock
+            _apiStockUrl    = $"{baseUrl}/api/Branch/stock";
+        }
 
         // GET /Inventory
         public async Task<IActionResult> Index()
@@ -29,7 +42,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", token);
 
-            var resp = await client.GetAsync(ApiGetProducts);
+            var resp = await client.GetAsync(_apiProductsUrl);
             if (resp.IsSuccessStatusCode)
             {
                 var json = await resp.Content.ReadAsStringAsync();
@@ -91,7 +104,7 @@ namespace ServiPuntosUyAdmin.Controllers
             var json    = JsonNet.JsonConvert.SerializeObject(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var resp = await client.PostAsync(ApiPostStock, content);
+            var resp = await client.PostAsync(_apiStockUrl, content);
             if (resp.IsSuccessStatusCode)
             {
                 TempData["Success"] = "Stock actualizado correctamente";

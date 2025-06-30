@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using System;  
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using ServiPuntosUyAdmin.Models;
 using System.Collections.Generic;
@@ -10,7 +13,14 @@ namespace ServiPuntosUyAdmin.Controllers
 {
     public class ParameterController : Controller
     {
-        private readonly string apiBaseUrl = "http://localhost:5162/api/GeneralParameter";
+        private readonly string _apiBaseUrl;
+
+        public ParameterController(IConfiguration config)
+        {
+            var baseUrl = config["API_BASE_URL"]
+                        ?? throw new InvalidOperationException("Tienes que definir API_BASE_URL");
+            _apiBaseUrl = $"{baseUrl}/api/GeneralParameter";
+        }
 
         // GET: /Parameter
         public async Task<IActionResult> Index()
@@ -18,7 +28,7 @@ namespace ServiPuntosUyAdmin.Controllers
             using var client = new HttpClient();
             AttachToken(client);
 
-            var response = await client.GetAsync(apiBaseUrl);
+            var response = await client.GetAsync(_apiBaseUrl);
             if (!response.IsSuccessStatusCode)
             {
                 TempData["Error"] = "No se pudieron cargar los parámetros.";
@@ -54,7 +64,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 description = parameter.Description
             };
             var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(apiBaseUrl, content);
+            var response = await client.PostAsync(_apiBaseUrl, content);
 
             if (response.IsSuccessStatusCode)
             {
@@ -74,7 +84,7 @@ namespace ServiPuntosUyAdmin.Controllers
             using var client = new HttpClient();
             AttachToken(client);
 
-            var response = await client.GetAsync($"{apiBaseUrl}/{key}");
+            var response = await client.GetAsync($"{_apiBaseUrl}/{key}");
             if (!response.IsSuccessStatusCode)
             {
                 TempData["Error"] = "No se encontró el parámetro solicitado.";
@@ -110,7 +120,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 description = parameter.Description
             };
             var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
-            var response = await client.PutAsync($"{apiBaseUrl}/{key}", content);
+            var response = await client.PutAsync($"{_apiBaseUrl}/{key}", content);
 
             if (response.IsSuccessStatusCode)
             {

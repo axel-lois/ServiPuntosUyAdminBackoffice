@@ -5,6 +5,8 @@ obj/
 # VSCode settings
 .vscode/
 
+.env
+
 # Otros archivos temporales
 *.user
 *.suo

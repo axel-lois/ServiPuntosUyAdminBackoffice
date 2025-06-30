@@ -1,4 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;       
+using System;                           
+using System.Net.Http;                    
+using System.Net.Http.Headers;            
+using Microsoft.Extensions.Configuration; 
 using ServiPuntosUyAdmin.Models;
 using System.Text.Json;
 
@@ -6,6 +11,15 @@ namespace ServiPuntosUyAdmin.Controllers
 {
     public class StatisticsController : Controller
     {
+        private readonly string _apiStatsUrl;
+
+        public StatisticsController(IConfiguration config)
+        {
+            var baseUrl = config["API_BASE_URL"]
+                        ?? throw new InvalidOperationException("Tienes que definir API_BASE_URL");
+            _apiStatsUrl = $"{baseUrl}/api/Statistics";
+        }
+
         public async Task<IActionResult> Users()
         {
             StatisticsData stats = null;
@@ -16,7 +30,7 @@ namespace ServiPuntosUyAdmin.Controllers
                     client.DefaultRequestHeaders.Authorization =
                         new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                var response = await client.GetAsync("http://localhost:5162/api/Statistics");
+                var response = await client.GetAsync(_apiStatsUrl);
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -40,7 +54,7 @@ namespace ServiPuntosUyAdmin.Controllers
                         client.DefaultRequestHeaders.Authorization =
                             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                    var response = await client.GetAsync("http://localhost:5162/api/Statistics");
+                    var response = await client.GetAsync(_apiStatsUrl);
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
@@ -64,7 +78,7 @@ namespace ServiPuntosUyAdmin.Controllers
                         client.DefaultRequestHeaders.Authorization =
                             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                    var response = await client.GetAsync("http://localhost:5162/api/Statistics");
+                    var response = await client.GetAsync(_apiStatsUrl);
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
@@ -88,7 +102,7 @@ namespace ServiPuntosUyAdmin.Controllers
                         client.DefaultRequestHeaders.Authorization =
                             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                    var response = await client.GetAsync("http://localhost:5162/api/Statistics");
+                    var response = await client.GetAsync(_apiStatsUrl);
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();

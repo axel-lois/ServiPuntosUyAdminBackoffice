@@ -5,14 +5,27 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Net.Http.Headers;
+using Microsoft.Extensions.Configuration;
 
 namespace ServiPuntosUyAdmin.Controllers
 {
     public class TenantController : Controller
     {
-        private readonly string apiBaseUrl = "http://localhost:5162/api/Tenant";
-        private readonly string apiUiUrl    = "http://localhost:5162/api/TenantUI";
-        private const string PublicTenantUrl = "http://localhost:5162/api/public/tenant";
+        private readonly string _apiTenantBase;
+        private readonly string _apiTenantUi;
+        private readonly string _apiPublicTenant;
+
+        public TenantController(IConfiguration config)
+        {
+            var baseUrl = config["API_BASE_URL"]
+                        ?? throw new InvalidOperationException("Tienes que definir API_BASE_URL");
+            _apiTenantBase   = $"{baseUrl}/api/Tenant";
+            _apiTenantUi     = $"{baseUrl}/api/TenantUI";
+            _apiPublicTenant = $"{baseUrl}/api/public/tenant";
+        }
 
         // GET: Tenant/Index
         public async Task<IActionResult> Index()
@@ -20,7 +33,7 @@ namespace ServiPuntosUyAdmin.Controllers
             List<Tenant> tenants = new();
 
             using var client = new HttpClient();
-            var resp = await client.GetAsync(PublicTenantUrl);
+            var resp = await client.GetAsync(_apiPublicTenant);
             if (resp.IsSuccessStatusCode)
             {
                 var json = await resp.Content.ReadAsStringAsync();
@@ -65,7 +78,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 });
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await client.PostAsync($"{apiBaseUrl}/Create", content);
+                var response = await client.PostAsync($"{_apiTenantBase}/Create", content);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -90,7 +103,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 if (!string.IsNullOrEmpty(token))
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                var response = await client.GetAsync($"{apiBaseUrl}/{id}");
+                var response = await client.GetAsync($"{_apiTenantBase}/{id}");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -126,7 +139,7 @@ namespace ServiPuntosUyAdmin.Controllers
                     name = tenant.Name
                 });
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.PutAsync($"{apiBaseUrl}/{tenant.Id}", data);
+                var response = await client.PutAsync($"{_apiTenantBase}/{tenant.Id}", data);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -151,7 +164,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 if (!string.IsNullOrEmpty(token))
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                var response = await client.GetAsync($"{apiBaseUrl}/{id}");
+                var response = await client.GetAsync($"{_apiTenantBase}/{id}");
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -178,7 +191,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 if (!string.IsNullOrEmpty(token))
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                var response = await client.DeleteAsync($"{apiBaseUrl}/{id}");
+                var response = await client.DeleteAsync($"{_apiTenantBase}/{id}");
                 TempData["Success"] = "¡La cadena se eliminó correctamente!";
                 return RedirectToAction(nameof(Index));
             }
@@ -194,7 +207,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 if (!string.IsNullOrEmpty(token))
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                var resp = await client.GetAsync($"{apiUiUrl}/{id}");
+                var resp = await client.GetAsync($"{_apiTenantUi}/{id}");
                 if (resp.IsSuccessStatusCode)
                 {
                     var json = await resp.Content.ReadAsStringAsync();
@@ -227,7 +240,7 @@ namespace ServiPuntosUyAdmin.Controllers
                     secondaryColor = config.SecondaryColor
                 });
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.PutAsync($"http://localhost:5162/api/TenantUI/{id}", content);
+                var response = await client.PutAsync($"{_apiTenantUi}/{id}", content);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -256,7 +269,7 @@ namespace ServiPuntosUyAdmin.Controllers
                 if (!string.IsNullOrEmpty(token))
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                var response = await client.GetAsync($"{apiBaseUrl}");
+                var response = await client.GetAsync(_apiTenantBase);
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();

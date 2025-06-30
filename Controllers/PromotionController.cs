@@ -6,6 +6,9 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using System;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
@@ -18,15 +21,33 @@ namespace ServiPuntosUyAdmin.Controllers
     public class PromotionController : Controller
     {
         private readonly ILogger<PromotionController> _logger;
-        private const string ApiBase = "http://localhost:5162/api/Promotion";
-        private const string ApiCreateTenant = ApiBase + "/Create";
-        private const string ApiListTenant = ApiBase + "/tenant";
-        private const string ApiListBranch = ApiBase + "/Branch";
-        private const string ApiCreateBranch = ApiBase + "/Branch/Create";
+        private readonly string _apiBase;
+        private readonly string _apiCreateTenant;
+        private readonly string _apiListTenant;
+        private readonly string _apiListBranch;
+        private readonly string _apiCreateBranch;
 
-        public PromotionController(ILogger<PromotionController> logger)
+        // Para LoadAvailableProducts:
+        private readonly string _apiBranchProducts;
+        private readonly string _apiProductList;
+
+        public PromotionController(ILogger<PromotionController> logger, IConfiguration config)
         {
             _logger = logger;
+
+            // Base de tu API
+            var baseUrl = config["API_BASE_URL"]
+                        ?? throw new InvalidOperationException("Define API_BASE_URL");
+
+            _apiBase          = $"{baseUrl}/api/Promotion";
+            _apiCreateTenant  = $"{_apiBase}/Create";
+            _apiListTenant    = $"{_apiBase}/tenant";
+            _apiListBranch    = $"{_apiBase}/Branch";
+            _apiCreateBranch  = $"{_apiListBranch}/Create";
+
+            // Para el helper LoadAvailableProducts
+            _apiBranchProducts = $"{baseUrl}/api/Branch/products";
+            _apiProductList    = $"{baseUrl}/api/Product";
         }
 
         // -----------------------------
@@ -42,7 +63,7 @@ namespace ServiPuntosUyAdmin.Controllers
             using var client = new HttpClient();
             AttachToken(client);
 
-            var resp = await client.GetAsync(ApiListBranch);
+            var resp = await client.GetAsync(_apiListBranch);
             if (!resp.IsSuccessStatusCode)
             {
                 TempData["Error"] = "No se pudieron obtener las promociones de la sucursal.";
@@ -115,7 +136,7 @@ namespace ServiPuntosUyAdmin.Controllers
             AttachToken(client);
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var resp    = await client.PostAsync(ApiCreateBranch, content);
+            var resp = await client.PostAsync(_apiCreateBranch, content);
             var body    = await resp.Content.ReadAsStringAsync();
 
             if (resp.IsSuccessStatusCode)
@@ -143,7 +164,7 @@ namespace ServiPuntosUyAdmin.Controllers
             using var client = new HttpClient();
             AttachToken(client);
 
-            var resp = await client.GetAsync(ApiListTenant);
+            var resp = await client.GetAsync(_apiListTenant);
             if (!resp.IsSuccessStatusCode)
             {
                 TempData["Error"] = "No se pudieron obtener las promociones.";
@@ -214,7 +235,7 @@ namespace ServiPuntosUyAdmin.Controllers
             AttachToken(client);
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var resp    = await client.PostAsync(ApiCreateTenant, content);
+            var resp = await client.PostAsync(_apiCreateTenant, content);
             var body    = await resp.Content.ReadAsStringAsync();
 
             if (resp.IsSuccessStatusCode)
@@ -247,9 +268,9 @@ namespace ServiPuntosUyAdmin.Controllers
 
             HttpResponseMessage resp;
             if (isBranch)
-                resp = await client.GetAsync("http://localhost:5162/api/Branch/products");
+                resp = await client.GetAsync(_apiBranchProducts);
             else
-                resp = await client.GetAsync("http://localhost:5162/api/Product");
+                resp = await client.GetAsync(_apiProductList);
 
             vm.AvailableProducts = new List<SelectListItem>();
             if (!resp.IsSuccessStatusCode) return;
