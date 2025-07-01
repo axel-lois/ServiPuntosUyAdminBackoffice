@@ -41,6 +41,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+// Para ver la traza completa del 500 en el navegador
+app.UseDeveloperExceptionPage();
 
 app.UseSession();
 
