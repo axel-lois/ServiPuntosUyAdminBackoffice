@@ -326,7 +326,7 @@ namespace ServiPuntosUyAdmin.Controllers
                         if (!string.IsNullOrEmpty(token))
                             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                        var resp = await client.GetAsync($"http://localhost:5162/api/Tenant/{tenantId}");
+                        var resp = await client.GetAsync($"{_apiTenantUrl}/{tenantId}");
                         if (resp.IsSuccessStatusCode)
                         {
                             var json = await resp.Content.ReadAsStringAsync();
