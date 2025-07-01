@@ -2,65 +2,69 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<style>
+    /* Grid responsivo para los widgets */
+    .dashboard-widgets {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+    }
+
+    /* Estilo de cada tarjeta */
+    .dashboard-widget {
+        background: #ffffff;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        color: inherit;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: box-shadow .2s;
+    }
+    .dashboard-widget:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .widget-title {
+        font-size: 1rem;
+        color: #6b46c1;
+        margin-bottom: 0.5rem;
+    }
+    .widget-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
+</style>
+
 <div class="dashboard-widgets">
-    <a href="/Statistics/Users" class="dashboard-widget dashboard-widget-link">
-        <div class="widget-title"><i class="fa-solid fa-users"></i> Usuarios</div>
+    <a href="/Statistics/Users" class="dashboard-widget">
+        <div class="widget-title">
+            <i class="fa-solid fa-users me-1"></i> Usuarios
+        </div>
         <div class="widget-value">@ViewBag.Usuarios</div>
     </a>
-    <a href="/Statistics/Transaction" class="dashboard-widget dashboard-widget-link">
-        <div class="widget-title"><i class="fa-solid fa-receipt"></i> Transacciones</div>
+
+    <a href="/Statistics/Transaction" class="dashboard-widget">
+        <div class="widget-title">
+            <i class="fa-solid fa-receipt me-1"></i> Transacciones
+        </div>
         <div class="widget-value">@ViewBag.Transacciones</div>
     </a>
-    <a href="/Statistics/Offers" class="dashboard-widget dashboard-widget-link">
-        <div class="widget-title"><i class="fa-solid fa-gift"></i> Ofertas activas</div>
+
+    <a href="/Statistics/Offers" class="dashboard-widget">
+        <div class="widget-title">
+            <i class="fa-solid fa-gift me-1"></i> Ofertas activas
+        </div>
         <div class="widget-value">@ViewBag.OfertasActivas</div>
     </a>
-    <a href="/Statistics/Points" class="dashboard-widget dashboard-widget-link">
-        <div class="widget-title"><i class="fa-solid fa-coins"></i> Puntos canjeados</div>
+
+    <a href="/Statistics/Points" class="dashboard-widget">
+        <div class="widget-title">
+            <i class="fa-solid fa-coins me-1"></i> Puntos canjeados
+        </div>
         <div class="widget-value">@ViewBag.PuntosCanjeados</div>
     </a>
 </div>
-
-<div class="dashboard-charts">
-    <div class="dashboard-chart-card">
-        <h3 class="dashboard-chart-title">Transacciones por mes</h3>
-        <canvas id="transaccionesChart"></canvas>
-    </div>
-    <div class="dashboard-chart-card">
-        <h3 class="dashboard-chart-title">Puntos canjeados por mes</h3>
-        <canvas id="puntosChart"></canvas>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const labels        = @Html.Raw(ViewBag.ChartLabels);
-    const transacciones = @Html.Raw(ViewBag.TransaccionesData);
-    const puntos        = @Html.Raw(ViewBag.PuntosData);
-
-    new Chart(document.getElementById('transaccionesChart'), {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{ label: 'Transacciones', data: transacciones, borderWidth: 2 }]
-        },
-        options: { plugins:{legend:{display:false}}, responsive:true, scales:{ y:{ beginAtZero:true } } }
-    });
-
-    new Chart(document.getElementById('puntosChart'), {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Puntos Canjeados',
-                data: puntos,
-                borderWidth: 2,
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: { plugins:{legend:{display:false}}, responsive:true, scales:{ y:{ beginAtZero:true } } }
-    });
-});
-</script>
