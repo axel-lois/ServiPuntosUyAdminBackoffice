@@ -387,30 +387,37 @@ namespace ServiPuntosUyAdmin.Controllers
         // GET: Station/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            using (var client = new HttpClient())
-            {
-                string token = HttpContext.Session.GetString("jwt_token");
-                if (!string.IsNullOrEmpty(token))
-                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            // 1) Prepara el client
+            using var client = new HttpClient();
+            var token = HttpContext.Session.GetString("jwt_token");
+            if (!string.IsNullOrEmpty(token))
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
 
-                // Solo se puede hacer GET de todas, no por id
-                var response = await client.GetAsync($"{_apiBranchUrl}/{id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json      = await response.Content.ReadAsStringAsync();
-                    // Necesitas un wrapper equivalente a StationResponse (un solo item)
-                    var wrapper   = System.Text.Json.JsonSerializer.Deserialize<StationResponse>(
-                                    json,
-                                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-                                    );
-                    station = wrapper?.Data;
-                }
-                else
-                {
-                    TempData["Error"] = "No se pudo obtener la estación a eliminar.";
-                    return RedirectToAction(nameof(Index));
-                }
+            // 2) Llama al endpoint específico /api/Branch/{id}
+            var resp = await client.GetAsync($"{_apiBranchUrl}/{id}");
+            if (!resp.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "No se pudo obtener la estación a eliminar.";
+                return RedirectToAction(nameof(Index));
             }
+
+            // 3) Deserializa como StationResponse
+            var json    = await resp.Content.ReadAsStringAsync();
+            var wrapper = System.Text.Json.JsonSerializer.Deserialize<StationResponse>(
+                json,
+                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            );
+            var station = wrapper?.Data;
+
+            if (station == null)
+            {
+                TempData["Error"] = "No se encontró la estación solicitada.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // 4) Devuelve la View con el objeto
+            return View(station);
         }
 
         // POST: Station/Delete/5

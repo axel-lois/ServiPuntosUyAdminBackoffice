@@ -15,7 +15,7 @@ namespace ServiPuntosUyAdmin.Controllers
 {
     public class InventoryController : Controller
     {
-        private readonly string _apiBaseUrl;
+        //private readonly string _apiBaseUrl;
         private readonly string _apiProductsUrl;
         private readonly string _apiStockUrl;
 
