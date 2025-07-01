@@ -50,9 +50,8 @@ namespace ServiPuntosUyAdmin.Models
         [JsonPropertyName("price")]
         public decimal Price { get; set; }
 
-        // <-- Aquí lo nuevo:
         [JsonPropertyName("products")]
-        public List<int> Products { get; set; } = new();
+        public List<PromotionProductDto> Products { get; set; } = new();
 
         [JsonPropertyName("branches")]
         public List<int> Branches { get; set; } = new();

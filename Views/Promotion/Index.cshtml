@@ -48,14 +48,14 @@
     {
       <tr>
         <td>
-            @if (o.Products != null && o.Products.Any())
-            {
-                @string.Join(", ", o.Products)
-            }
-            else
-            {
-                <em>—</em>
-            }
+          @if (o.Products?.Any() ?? false)
+          {
+              @string.Join(", ", o.Products.Select(p => p.Name))
+          }
+          else
+          {
+              <em>—</em>
+          }
         </td>
         <td>@o.Description</td>
         <td>@o.Price.ToString("C")</td>
