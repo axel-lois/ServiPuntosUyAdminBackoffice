@@ -394,15 +394,16 @@ namespace ServiPuntosUyAdmin.Controllers
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
                 // Solo se puede hacer GET de todas, no por id
-                var response = await client.GetAsync(_apiBranchUrl);
+                var response = await client.GetAsync($"{_apiBranchUrl}/{id}");
                 if (response.IsSuccessStatusCode)
                 {
-                    var json = await response.Content.ReadAsStringAsync();
-                    var result = System.Text.Json.JsonSerializer.Deserialize<StationListResponse>(json, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    var station = result?.Data?.FirstOrDefault(s => s.Id == id);
-
-                    if (station == null) return NotFound();
-                    return View(station);
+                    var json      = await response.Content.ReadAsStringAsync();
+                    // Necesitas un wrapper equivalente a StationResponse (un solo item)
+                    var wrapper   = System.Text.Json.JsonSerializer.Deserialize<StationResponse>(
+                                    json,
+                                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                                    );
+                    station = wrapper?.Data;
                 }
                 else
                 {
