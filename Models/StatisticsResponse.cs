@@ -33,6 +33,7 @@ namespace ServiPuntosUyAdmin.Models
     public class TransactionsStatistics
     {
         public int Total { get; set; }
+        public int TotalPointsRedeemed { get; set; }
     }
 
     public class PromotionsStatistics

@@ -34,6 +34,7 @@ namespace ServiPuntosUyAdmin.Controllers
             int usuarios       = 0;
             int transacciones  = 0;
             int ofertasActivas = 0;
+            int puntosCanjeados = 0;
 
             using (var client = new HttpClient())
             {
@@ -54,6 +55,7 @@ namespace ServiPuntosUyAdmin.Controllers
                         usuarios      = result.Data.Users?.Total        ?? 0;
                         transacciones = result.Data.Transactions?.Total ?? 0;
                         ofertasActivas= result.Data.Promotions?.Total   ?? 0;
+                        puntosCanjeados = result.Data.Transactions?.TotalPointsRedeemed ?? 0;
                     }
                 }
             }
@@ -61,6 +63,7 @@ namespace ServiPuntosUyAdmin.Controllers
             ViewBag.Usuarios      = usuarios;
             ViewBag.Transacciones  = transacciones;
             ViewBag.OfertasActivas = ofertasActivas;
+            ViewBag.PuntosCanjeados = puntosCanjeados;
 
             // Historial de transacciones 
             var history = new List<TransactionHistoryDto>();
@@ -80,10 +83,6 @@ namespace ServiPuntosUyAdmin.Controllers
                         history = wrapper.Data;
                 }
             }
-
-            // Total de puntos canjeados
-            var puntosCanjeados = history.Sum(h => h.PointsSpent);
-            ViewBag.PuntosCanjeados = puntosCanjeados;
 
             // Datos para la gráfica de los últimos 6 meses
             var hoy    = DateTime.UtcNow;

@@ -1,5 +1,39 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var stats = ViewBag.Statistics as ServiPuntosUyAdmin.Models.StatisticsData;
 }
 
-<h2>Puntos</h2>
+<h2>Puntos canjeados</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Concepto</th>
+            <th class="text-center">Cantidad</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="clickable-row">
+            <td>Total de puntos canjeados</td>
+            <td class="text-center">
+                @(stats?.Transactions?.TotalPointsRedeemed ?? 0)
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<style>
+    .clickable-row { cursor: pointer; }
+    .clickable-row.active { background: #e0e7ff; font-weight: bold; }
+</style>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('.clickable-row').forEach(row => {
+        row.addEventListener('click', function(){
+            document.querySelectorAll('.clickable-row')
+                    .forEach(r => r.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+});
+</script>
