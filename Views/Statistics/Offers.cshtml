@@ -8,19 +8,11 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Tipo de ofertas</th>
+            <th>Ofertas</th>
             <th>Cantidad</th>
         </tr>
     </thead>
     <tbody>
-        <tr class="clickable-row">
-            <td >Estaciones</td>
-            <td class="text-center">@(stats?.Promotions?.BranchPromotions ?? 0)</td>
-        </tr>
-        <tr class="clickable-row">
-            <td >Tenant</td>
-            <td class="text-center">@(stats?.Promotions?.TenantPromotions ?? 0)</td>
-        </tr>
         <tr class="clickable-row">
             <td >Total</td>
             <td class="text-center">@(stats?.Promotions?.Total ?? 0)</td>
