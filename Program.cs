@@ -1,4 +1,6 @@
 using System.Net.Http.Headers;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +25,15 @@ builder.Services.AddHttpClient("ApiClientWithToken", client =>
 })
 .AddHttpMessageHandler<AuthTokenHandler>();
 
+var defaultCulture = new CultureInfo("es-UY");
+var localizationOptions = new RequestLocalizationOptions {
+    DefaultRequestCulture = new RequestCulture(defaultCulture),
+    SupportedCultures = new List<CultureInfo> { defaultCulture },
+    SupportedUICultures = new List<CultureInfo> { defaultCulture }
+};
 var app = builder.Build();
+
+app.UseRequestLocalization(localizationOptions);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
