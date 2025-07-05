@@ -25,12 +25,20 @@ builder.Services.AddHttpClient("ApiClientWithToken", client =>
 })
 .AddHttpMessageHandler<AuthTokenHandler>();
 
+
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<TokenCheckFilter>();
+});
+
 var defaultCulture = new CultureInfo("es-UY");
 var localizationOptions = new RequestLocalizationOptions {
     DefaultRequestCulture = new RequestCulture(defaultCulture),
     SupportedCultures = new List<CultureInfo> { defaultCulture },
     SupportedUICultures = new List<CultureInfo> { defaultCulture }
 };
+builder.Services.AddScoped<TokenCheckFilter>();
+
 var app = builder.Build();
 
 app.UseRequestLocalization(localizationOptions);
